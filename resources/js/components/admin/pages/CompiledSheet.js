@@ -59,6 +59,7 @@ class CompiledSheet extends Component {
     this.loadStudent = this.loadStudent.bind(this);
     this.loadStudent2 = this.loadStudent2.bind(this);
     //
+    this.handlePrint = this.handlePrint.bind(this);
      this.handlePrint2 = this.handlePrint2.bind(this);
 
     // this.formSubmit = this.formSubmit.bind(this);
@@ -116,6 +117,58 @@ handleCourse(event) {
 
 
 
+//selectedExams
+
+handlePrint = (event) => {
+	
+    // console.log("print type remarks",studRemarks)
+    this.setState({ isSpinner3: true }, () => {
+        const url = `${base_url}api/markreport/printstudentall/`;
+
+        axios.get(url, {
+            params: { // Pass any additional parameters here
+                // remarks: studRemarks,
+                // sheet_id: sheetid,
+                exam_id: this.state.exam_id,
+                course_id: this.state.course_id,
+                class_id: this.state.class_id2,
+                section_id: this.state.section_id,
+               
+            }
+        }).then(response => {
+            if (response.data.status === 'successed')
+            {
+                // // console.log("student pdf",response)
+                 var receipt =(typeof(response.data.data)!='object')?response.data.data:'';
+                if(receipt !='')
+                {
+                    let a = document.createElement("a");
+                    let url = base_url+'marks_report'+'/all_exam_marks/'+receipt;
+                    a.target='_blank';
+                   a.href = url;
+                   document.body.appendChild(a);
+                   a.click();
+                   document.body.removeChild(a);
+                 }
+                this.setState({showErr:false,isSpinner3:false});
+
+                // console.log('abc');
+            }
+            else
+            {
+                this.setState({showErr:true,delmessage:response.data.message,errors:response.data.errors,isSpinner3:false});
+                console.log('abcd');
+            }
+        })
+        .catch(error => {
+        //console.log(error.message);
+            console.log(error.response.data);
+        })
+    });
+}
+
+
+
 handlePrint2 = (event) => {
 	
     // console.log("print type remarks",studRemarks)
@@ -136,24 +189,24 @@ handlePrint2 = (event) => {
             if (response.data.status === 'successed')
             {
                 // // console.log("student pdf",response)
-                // var receipt =(typeof(response.data.data)!='object')?response.data.data:'';
-                // if(receipt !='')
-                // {
-                //     let a = document.createElement("a");
-                //     let url = base_url+'marks_report'+'/all_marks/'+receipt;
-                //     a.target='_blank';
-                //     a.href = url;
-                //     document.body.appendChild(a);
-                //     a.click();
-                //     document.body.removeChild(a);
-                // }
-                // this.setState({showErr:false,isSpinner2:false});
+                 var receipt =(typeof(response.data.data)!='object')?response.data.data:'';
+                if(receipt !='')
+                {
+                    let a = document.createElement("a");
+                    let url = base_url+'marks_report'+'/all_marks/'+receipt;
+                    a.target='_blank';
+                   a.href = url;
+                   document.body.appendChild(a);
+                   a.click();
+                   document.body.removeChild(a);
+                 }
+                this.setState({showErr:false,isSpinner2:false});
 
                 // console.log('abc');
             }
             else
             {
-                // this.setState({showErr:true,delmessage:response.data.message,errors:response.data.errors,isSpinner2:false});
+                this.setState({showErr:true,delmessage:response.data.message,errors:response.data.errors,isSpinner2:false});
                 console.log('abcd');
             }
         })
@@ -1138,7 +1191,7 @@ HaderPart end
                                 {this.renderErrorFor('remarks')}
 					        </div>
                             <div className="form-group col-md-12 text-right">
-                                <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handlePrint(e,`${this.state.subject_id}`)} id="normal" disabled={this.state.isSpinner2}>Print <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner2 ? 'inline' : 'none' }}></span></button>
+                                <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handlePrint(e)} id="normal" disabled={this.state.isSpinner3}>Print <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner3 ? 'inline' : 'none' }}></span></button>
                                 <button type="submit" className="btn btn-success">Save Remark</button>
                             </div>
                         </>

@@ -407,7 +407,7 @@ class MarkReportController extends Controller
     ->where('exam_date_sheet.course_id', $request->course_id)
     ->where('exam_date_sheet.class_id', $request->class_id)
     ->where('exam_date_sheet.section_id', $request->section_id)
-    ->select('st.id as student_id', 'st.student_name as student_name', 'sm.subjectName', 'sm.subjectId','ed.marks_obtained','exam_date_sheet.max_mark','st.student_name','st.mother_name','st.father_name','st.dob','st.admission_no','st.roll_no')
+    ->select('st.id as student_id', 'st.student_name as student_name', 'sm.subjectName', 'sm.subjectId','ed.marks_obtained','exam_date_sheet.max_mark','st.student_name','st.mother_name','st.father_name','st.dob','st.admission_no','st.roll_no','ed.theory','ed.assessment','ed.internal')
     ->orderBy('st.id', 'asc')
     ->get();
 
@@ -426,6 +426,9 @@ $groupedData = $data->groupBy('student_id')->map(function ($group) {
                 'subjectId' => $item->subjectId,
                 'subjectName' => $item->subjectName,
                 'marks_obtained' => $item->marks_obtained,
+                'theory' => $item->theory,
+                'assessment' => $item->assessment,
+                'internal' => $item->internal,
                 'max_mark' => $item->max_mark
             ];
         })
@@ -465,7 +468,95 @@ $school=School::where('school_code','S110')->get();
 
 
 
+    public function printStudentAllExam(Request $request)
+    {
 
+        $data = ExamDateSheet::leftJoin('exam_date_sheet_marks as ed', 'exam_date_sheet.id', '=', 'ed.sheet_id')
+        ->leftJoin('subject_master as sm', 'ed.subject_id', '=', 'sm.subjectId')
+        ->leftJoin('student_master as st', 'ed.student_id', '=', 'st.id')
+        ->whereIn('exam_date_sheet.exam_id', $request->exam_id)
+        ->where('exam_date_sheet.course_id', $request->course_id)
+        ->where('exam_date_sheet.class_id', $request->class_id)
+        ->where('exam_date_sheet.section_id', $request->section_id)
+        ->select(
+            'st.id as student_id', 
+            'st.student_name', 
+            'sm.subjectName', 
+            'sm.subjectId', 
+            'ed.marks_obtained', 
+            'exam_date_sheet.max_mark', 
+            'st.mother_name', 
+            'st.father_name', 
+            'st.dob', 
+            'st.admission_no', 
+            'st.roll_no', 
+            'ed.theory', 
+            'ed.assessment', 
+            'ed.internal', 
+            'exam_date_sheet.exam_id' // Include exam_id in the select statement
+        )
+        ->orderBy('st.id', 'asc')
+        ->get();
+    
+ // Transform the results
+$groupedData = $data->groupBy('student_id')->map(function ($group) {
+    return [
+        'student_id' => $group->first()->student_id,
+        'student_name' => $group->first()->student_name,
+        'mother_name' => $group->first()->mother_name,
+        'father_name' => $group->first()->father_name,
+        'dob' => $group->first()->dob,
+        'admission_no' => $group->first()->admission_no,
+        'roll_no' => $group->first()->roll_no,
+        'subjects' => $group->map(function ($item) {
+            return [
+                'subjectId' => $item->subjectId,
+                'subjectName' => $item->subjectName,
+                'marks_obtained' => $item->marks_obtained,
+                'theory' => $item->theory,
+                'assessment' => $item->assessment,
+                'internal' => $item->internal,
+                'max_mark' => $item->max_mark,
+                'exam_id' => $item->exam_id // Include exam_id in each subject
+            ];
+        })
+    ];
+})->values()->toArray(); // Convert back to array if needed
+
+// Now $groupedData will have the desired format
+
+
+$school=School::where('school_code','S110')->get();
+
+$exam_ids = [8, 9]; // Array of school codes
+
+$exams = Exam::whereIn('id', $exam_ids)->get();
+
+
+
+                      $receipt_name=time().rand(1,99).'.'.'pdf'; 
+                      $customPaper = [0, 0, 505.28, 841.89];
+         
+                  $pdf = PDF::loadView("marks_report_print_all_exam",['data' => $groupedData,'school'=>$school,'exams'=>$exams])
+                             ->setPaper($customPaper)
+                          ->setOptions(['margin-left' => 0, 'margin-right' => 0, 'margin-top' => 0, 'margin-bottom' => 0])
+                           ->save(public_path("marks_report/all_exam_marks/$receipt_name"));
+         
+
+
+
+
+
+
+        
+			$message="Student details generated successfully, get the report card.";
+
+			$response_arr=array("status"=>'successed',"success"=>true,"message"=>$message,"errors"=>[],"data" =>$receipt_name);
+		
+
+		return response()->json($response_arr);
+
+    }
 
 
 

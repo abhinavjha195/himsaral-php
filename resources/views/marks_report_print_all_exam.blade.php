@@ -203,6 +203,7 @@
 <body>
     <div class="print-area">
     @foreach ($data as $da)
+    @if($da['student_name'] != '')
     <table class="noborder" style="margin-left:auto;margin-right:auto;width:580px;position: relative;">
             <tr>
                 <td>
@@ -246,29 +247,53 @@
         <table class="marks-table">
             <thead>
                 <tr>
-                    <th>Subject</th>
-                    <th>Internal</th>
-                    <th>PA</th>
-                    <th>Theory</th>
-                    <th>Total</th>
+                    <th rowspan="2">Subject</th>
+
+                    @foreach ($exams as $exam) <!-- Loop through subjects -->
+                    <th colspan="3">{{ $exam->name }}</th>
+                    @endforeach
+                   
+                    
+                </tr>
+
+                <tr>
+                @foreach ($exams as $exam) <!-- Loop through subjects -->
+                    <th>Marks</th>
+                    <th>Grades</th>
+                    <th>Max Marks</th>
+                    @endforeach
                     
                 </tr>
             </thead>
             <tbody>
                
+                    
             @foreach ($da['subjects'] as $subject) <!-- Loop through subjects -->
                      
-                            <tr>
-                                <td>{{ $subject['subjectName'] }}</td>
-                                <td>{{ $subject['internal'] }}</td>
-                                <td>{{ $subject['assessment'] }}</td>
-                                <td>{{ $subject['theory'] }}</td>
-                               
-                                <td>{{ $subject['marks_obtained'] }}</td>
-                                
-                            </tr>
-                      
-                    @endforeach
+           
+                     <tr>
+                     <td>{{ $subject['subjectName'] }}</td>
+                     @foreach ($exams as $exam) <!-- Loop through subjects -->
+                        
+                        @if($exam->id == $subject['exam_id'])
+                        
+                         <td>{{ $subject['marks_obtained'] }}</td>
+                         <td>A</td>
+                         <td>{{ $subject['max_mark'] }}</td>
+                         @else
+                         <td>-</td>
+                         <td>-</td>
+                         <td>-</td>
+
+                         @endif
+                         @endforeach
+                         
+                     </tr>
+
+                    
+               
+             @endforeach
+              
               
             </tbody>
         </table>
@@ -292,6 +317,7 @@
 
          <!-- Add page break here -->
     <div style="page-break-after: always;"></div>
+    @endif
         @endforeach
     </div>
 </body>
