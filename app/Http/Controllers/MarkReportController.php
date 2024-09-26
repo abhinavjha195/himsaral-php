@@ -21,6 +21,9 @@ use Image;
 use PDF;
 use Helper;
 
+use App\Exports\AllExamMarkReportExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class MarkReportController extends Controller
 {
@@ -528,16 +531,18 @@ $groupedData = $data->groupBy('student_id')->map(function ($group) {
 
 $school=School::where('school_code','S110')->get();
 
-$exam_ids = [8, 9]; // Array of school codes
+$exam_ids = $request->exam_id; // Array of school codes
 
 $exams = Exam::whereIn('id', $exam_ids)->get();
+$grades = Grade::all();
+$grade_by=$request->grade_by;
 
 
 
                       $receipt_name=time().rand(1,99).'.'.'pdf'; 
                       $customPaper = [0, 0, 505.28, 841.89];
          
-                  $pdf = PDF::loadView("marks_report_print_all_exam",['data' => $groupedData,'school'=>$school,'exams'=>$exams])
+                  $pdf = PDF::loadView("marks_report_print_all_exam",['data' => $groupedData,'school'=>$school,'exams'=>$exams,'grades'=>$grades,'grade_by'=>$grade_by])
                              ->setPaper($customPaper)
                           ->setOptions(['margin-left' => 0, 'margin-right' => 0, 'margin-top' => 0, 'margin-bottom' => 0])
                            ->save(public_path("marks_report/all_exam_marks/$receipt_name"));
@@ -560,7 +565,13 @@ $exams = Exam::whereIn('id', $exam_ids)->get();
 
 
 
-
+    public function ExcelStudentAllExam(Request $request)
+    {
+        $filename = 'student_exam_report_' . time() . '.xlsx';
+        
+        // Return Excel download
+        return Excel::download(new AllExamMarkReportExport($request), $filename);
+    }
 
 
 

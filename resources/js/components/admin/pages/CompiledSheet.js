@@ -121,18 +121,20 @@ handleCourse(event) {
 
 handlePrint = (event) => {
 	
+    console.log(this.state.selectedExams,'selectedExams');
     // console.log("print type remarks",studRemarks)
     this.setState({ isSpinner3: true }, () => {
-        const url = `${base_url}api/markreport/printstudentall/`;
+        const url = `${base_url}api/markreport/printstudentallexam/`;
 
         axios.get(url, {
             params: { // Pass any additional parameters here
                 // remarks: studRemarks,
                 // sheet_id: sheetid,
-                exam_id: this.state.exam_id,
+                exam_id: this.state.selectedExams,
                 course_id: this.state.course_id,
-                class_id: this.state.class_id2,
+                class_id: this.state.class_id,
                 section_id: this.state.section_id,
+                grade_by:this.state.grade_by,
                
             }
         }).then(response => {
@@ -232,13 +234,9 @@ handleCourse2(event) {
 				classList2: response.data.data ? response.data.data :[],
 
                
-				sectionList:[],
-				subjectList:[],
-				studentList:[],
+				
 				[inpt]: id,
-				class_id:'',
-				section_id:'',
-				subject_id:'',
+			
 				
 			});
 		})
@@ -249,14 +247,17 @@ handleCourse2(event) {
    else
    {
 	   this.setState({
-			classList2:[],
-            sectionList:[],
-			subjectList:[],
-			studentList:[],
-			[inpt]: id,
-			class_id:'',
-			section_id:'',
-			subject_id:'',
+       
+        classList2:[],
+        sectionList2:[],
+        studentList2:[],
+        section_id2:'',
+        course_id2:'',
+        class_id2:'',
+       
+        
+        [inpt]: id,
+			
 			
 		});
    }
@@ -308,6 +309,7 @@ handleClass2(event){
 	const id = event.target.value;
 	const course_id = this.state.course_id2;
 
+    console.log('val',id);
 	if(id !='')
 	{
 			axios.get(`${base_url}api`+`/class/getsectionbyclassandcourse/${id}/${course_id}`).then(response => {
@@ -325,7 +327,20 @@ handleClass2(event){
 	}
 	else
 	{
-		this.setState({ [inpt]:id,section_id:'',sectionList2:[], examList2:[]});
+		this.setState({ 
+            
+            [inpt]:id,
+         
+            sectionList2:[],
+            studentList2:[],
+            section_id2:'',
+           
+            class_id2:'',
+            
+           
+        
+        
+        });
 	}
 }
 
@@ -412,7 +427,10 @@ handleSection2(event){
 	}
 	else
 	{
-		this.setState({ [inpt]:id,subjectList2:[],studentList2:[], examList2:[], showExam:false, selectedExams:[], grade_by: '',});
+		this.setState({ [inpt]:id,subjectList2:[],studentList2:[],  showExam:false, selectedExams:[], grade_by: '', section_id2:'',
+           
+           
+            });
 	}
 
 }
@@ -465,6 +483,15 @@ handleExamChange2(event) {
    {
 	   this.setState({
 			courseList2:[],
+            classList2:[],
+            sectionList2:[],
+            studentList2:[],
+            section_id2:'',
+            course_id2:'',
+            class_id2:'',
+            exam_id2:'',
+
+
             [inpt]: id,
 			
 		});
@@ -1436,7 +1463,7 @@ HaderPart end
                                                 </div>
                                             </div>
 
-                                            <div className="form-group col-md-12">
+                                            <div className="form-group col-md-12" style={{display:'none'}}>
                                                 <div className="print-id-card-table">
                                                     <h2>Scholastic Total</h2>
                                                     <div className="table-responsive">

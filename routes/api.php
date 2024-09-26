@@ -305,6 +305,7 @@ Route::get('/markreport/getstudents/{id1}/{id2}/{id3}/{id4}',[MarkReportControll
 Route::get('/markreport/printstudent/{id1}',[MarkReportController::class,'printStudent']);
 Route::get('/markreport/printstudentall/',[MarkReportController::class,'printStudentAll']);
 Route::get('/markreport/printstudentallexam/',[MarkReportController::class,'printStudentAllExam']);
+Route::get('/markreport/excelstudentallexam/',[MarkReportController::class,'ExcelStudentAllExam']);
 Route::post('/markreport/updateRemark',[MarkReportController::class,'updateRemark']);
 Route::get('/markreport/remarks', [MarkReportController::class, 'getRemarks']);
 Route::get('/markreport/getStudBySection/{id1}/{id2}/{id3}',[MarkReportController::class,'getStudBySection']);

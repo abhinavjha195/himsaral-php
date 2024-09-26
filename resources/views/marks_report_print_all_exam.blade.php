@@ -250,7 +250,12 @@
                     <th rowspan="2">Subject</th>
 
                     @foreach ($exams as $exam) <!-- Loop through subjects -->
+
+                    @if($grade_by == 'grades')
                     <th colspan="3">{{ $exam->name }}</th>
+                    @else
+                    <th colspan="2">{{ $exam->name }}</th>
+                    @endif
                     @endforeach
                    
                     
@@ -259,7 +264,9 @@
                 <tr>
                 @foreach ($exams as $exam) <!-- Loop through subjects -->
                     <th>Marks</th>
-                    <th>Grades</th>
+                    @if($grade_by == 'grades')
+                    <th>Grade</th>
+                    @endif
                     <th>Max Marks</th>
                     @endforeach
                     
@@ -267,25 +274,80 @@
             </thead>
             <tbody>
                
-                    
+            @php
+    $totalMarksObtained = 0;
+    $max_marks = 0;
+    $percentage=0;
+@endphp
             @foreach ($da['subjects'] as $subject) <!-- Loop through subjects -->
                      
            
                      <tr>
                      <td>{{ $subject['subjectName'] }}</td>
+                     @php $i=0; @endphp
                      @foreach ($exams as $exam) <!-- Loop through subjects -->
                         
                         @if($exam->id == $subject['exam_id'])
                         
+
+
+                        @php
+                        $subject_percentage = ($subject['max_mark'] > 0) ? ($subject['marks_obtained'] / $subject['max_mark']) * 100 : 0;
+
+
+
+// Determine the grade based on the percentage
+$subGrade = '-';
+foreach ($grades as $grade) {
+    if ($subject_percentage >= $grade['marksAbove'] && $subject_percentage <= $grade['marksLess']) {
+        $subGrade = $grade['grade'];
+        break;
+    }
+}
+@endphp
+
+
+
                          <td>{{ $subject['marks_obtained'] }}</td>
-                         <td>A</td>
+                         @if($grade_by == 'grades')
+                         <td>{{ $subGrade}}</td>
+                         @endif
                          <td>{{ $subject['max_mark'] }}</td>
                          @else
                          <td>-</td>
+
+
+                         @if($grade_by == 'grades')
                          <td>-</td>
+                         @endif
+
+                         
                          <td>-</td>
 
+
+                         @php
+        $totalMarksObtained += $subject['marks_obtained'];
+        $max_marks += $subject['max_mark'];
+  
+    $percentage = ($max_marks > 0) ? ($totalMarksObtained / $max_marks) * 100 : 0;
+
+
+
+    // Determine the grade based on the percentage
+    $studentGrade = '-';
+    foreach ($grades as $grade) {
+        if ($percentage >= $grade['marksAbove'] && $percentage <= $grade['marksLess']) {
+            $studentGrade = $grade['grade'];
+            break;
+        }
+    }
+
+@endphp
+
+
+                          
                          @endif
+                         $i=$i+1;
                          @endforeach
                          
                      </tr>
@@ -296,6 +358,26 @@
               
               
             </tbody>
+        </table>
+
+
+
+        <table class="marks-table">
+            <tr>
+                <td><strong>Total:</strong></td><td> {{$max_marks }}</td>
+                </tr>
+                <tr>
+                <td><strong>Marks Obtained:</strong> </td><td>{{ $totalMarksObtained }}</td>
+              
+                </tr>
+                <tr>
+                <td><strong>Percentage:</strong> </td><td>{{ number_format($percentage, 2) }}%</td>
+            </tr>
+            @if($grade_by == 'grades')
+            <tr>
+                <td><strong>Grade:</strong></td><td> {{$studentGrade }}</td>
+                </tr>
+                @endif
         </table>
 
        

@@ -255,7 +255,11 @@
                 </tr>
             </thead>
             <tbody>
-               
+            @php
+    $totalMarksObtained = 0;
+    $max_marks = 0;
+    $percentage=0;
+@endphp
             @foreach ($da['subjects'] as $subject) <!-- Loop through subjects -->
                      
                             <tr>
@@ -267,11 +271,35 @@
                                 <td>{{ $subject['marks_obtained'] }}</td>
                                 
                             </tr>
-                      
+                            @php
+        $totalMarksObtained += $subject['marks_obtained'];
+        $max_marks += $subject['max_mark'];
+  
+    $percentage = ($max_marks > 0) ? ($totalMarksObtained / $max_marks) * 100 : 0;
+@endphp
                     @endforeach
               
             </tbody>
         </table>
+
+
+        <table class="marks-table">
+            <tr>
+                <td><strong>Total:</strong></td><td> {{$max_marks }}</td>
+                </tr>
+                <tr>
+                <td><strong>Marks Obtained:</strong> </td><td>{{ $totalMarksObtained }}</td>
+              
+                </tr>
+                <tr>
+                <td><strong>Percentage:</strong> </td><td>{{ number_format($percentage, 2) }}%</td>
+            </tr>
+           
+        </table>
+
+
+
+        
 
        
         <table class="noborder" style="margin-left:auto;margin-right:auto;width:100%; height: auto; border:1px solid;">
