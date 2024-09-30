@@ -1,3 +1,7 @@
+
+@foreach ($data as $da)
+@if($da['student_name'] != '')
+
 <!DOCTYPE html>
 <html>
 
@@ -197,13 +201,15 @@
             font-weight: bold;
             padding-top: 20px;
         }
+        
     </style>
 </head>
 
 <body>
+
+
     <div class="print-area">
-    @foreach ($data as $da)
-    @if($da['student_name'] != '')
+   
     <table class="noborder" style="margin-left:auto;margin-right:auto;width:580px;position: relative;">
             <tr>
                 <td>
@@ -397,11 +403,15 @@ foreach ($grades as $grade) {
             </tr>
         </table>
 
-         <!-- Add page break here -->
-    <div style="page-break-after: always;"></div>
-    @endif
-        @endforeach
+   
+   
     </div>
+   
 </body>
 
 </html>
+@endif
+@endforeach
+
+      <!-- Add page break here -->
+      <!-- <div style="page-break-after: always;"></div> -->

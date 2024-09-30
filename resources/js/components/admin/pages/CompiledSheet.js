@@ -43,6 +43,9 @@ class CompiledSheet extends Component {
         studentList2:[],
         subjectList2:[],
         gradeList:[],
+        theory2:'',
+        internal2:'',
+        practical2:'',
     };
 	this.handleChange = this.handleChange.bind(this);
 	this.handleTab = this.handleTab.bind(this);
@@ -61,6 +64,9 @@ class CompiledSheet extends Component {
     //
     this.handlePrint = this.handlePrint.bind(this);
      this.handlePrint2 = this.handlePrint2.bind(this);
+
+     this.handleExcel = this.handleExcel.bind(this);
+     this.handleExcel2 = this.handleExcel2.bind(this);
 
     // this.formSubmit = this.formSubmit.bind(this);
 	this.hasErrorFor = this.hasErrorFor.bind(this);
@@ -171,6 +177,94 @@ handlePrint = (event) => {
 
 
 
+
+
+handleExcel = (event) => {
+    console.log(this.state.selectedExams, 'selectedExams');
+    this.setState({ isSpinner30: true }, () => {
+        const url = `${base_url}api/markreport/excelstudentallexam/`;
+
+        axios.get(url, {
+            params: {
+                exam_id: this.state.selectedExams,
+                course_id: this.state.course_id,
+                class_id: this.state.class_id,
+                section_id: this.state.section_id,
+                grade_by: this.state.grade_by,
+            },
+            responseType: 'blob', // Ensure response is treated as a binary file (Excel)
+        }).then(response => {
+            if (response.data) {
+                // Create a Blob from the response data
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'student_exam_report.xlsx'); // Define filename here
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+                this.setState({ showErr: false, isSpinner30: false });
+            } else {
+                this.setState({
+                    showErr: true,
+                    delmessage: 'Failed to generate report',
+                    errors: response.data.errors,
+                    isSpinner30: false,
+                });
+            }
+        }).catch(error => {
+            console.log(error.response?.data || error.message);
+            this.setState({ showErr: true, isSpinner30: false });
+        });
+    });
+}
+
+
+
+
+handleExcel2 = (event) => {
+    console.log(this.state.selectedExams, 'selectedExams');
+    this.setState({ isSpinner20: true }, () => {
+        const url = `${base_url}api/markreport/excelstudentsingleexam/`;
+
+        axios.get(url, {
+            params: {
+                exam_id: this.state.exam_id2,
+                course_id: this.state.course_id2,
+                class_id: this.state.class_id2,
+                section_id: this.state.section_id2,
+            },
+            responseType: 'blob', // Ensure response is treated as a binary file (Excel)
+        }).then(response => {
+            if (response.data) {
+                // Create a Blob from the response data
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'student_exam_report.xlsx'); // Define filename here
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+                this.setState({ showErr: false, isSpinner20: false });
+            } else {
+                this.setState({
+                    showErr: true,
+                    delmessage: 'Failed to generate report',
+                    errors: response.data.errors,
+                    isSpinner20: false,
+                });
+            }
+        }).catch(error => {
+            console.log(error.response?.data || error.message);
+            this.setState({ showErr: true, isSpinner20: false });
+        });
+    });
+}
+
+
+
 handlePrint2 = (event) => {
 	
     // console.log("print type remarks",studRemarks)
@@ -185,6 +279,10 @@ handlePrint2 = (event) => {
                 course_id: this.state.course_id2,
                 class_id: this.state.class_id2,
                 section_id: this.state.section_id2,
+                theory: this.state.theory2,
+                assessment: this.state.practical2,
+                internal: this.state.internal2,
+                
                
             }
         }).then(response => {
@@ -1005,6 +1103,26 @@ HaderPart end
 					  </div>
 
 
+                         <div className="form-group col-md-6">
+                                            <label>Calculate % of Internal, Pa/Practical, Theory by desired amount</label>
+                                            <div className="form-row">
+                                                <div className="form-group col-md-4">
+                                                    <input type="number" name="theory2" 
+                                                    value={this.state.theory2}
+                                                    placeholder="Theory"  className="form-control"   onChange={this.handleChange}/>
+                                                </div>
+                                                <div className="form-group col-md-4">
+                                                    <input type="number" name="practical2" placeholder="PA/Practical"  value={this.state.practical2} className="form-control"   onChange={this.handleChange} />
+                                                </div>
+                                                <div className="form-group col-md-4">
+                                                    <input type="number" value={this.state.internal2} name="internal2" placeholder="Internal"
+                                                    onChange={this.handleChange}
+                                                    className="form-control"/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
 
 
 
@@ -1046,13 +1164,36 @@ HaderPart end
                     const key = item.student_id; // Group by student_id
                     if (!acc[key]) {
                         acc[key] = { ...item, marks_obtained: [] }; // Initialize with the first entry
+                    
                     }
+
+                    let theory_mark=item.theory;
+                    let internal_mark=item.internal;
+                    let practical_mark=item.assessment;
+
+if(this.state.theory2!=''){
+theory_mark=((item.theory)/item.max_mark)*this.state.theory2;
+
+}
+
+if(this.state.internal2!=''){
+    internal_mark=((item.internal)/item.max_mark)*this.state.internal2;
+    
+    }
+
+
+    if(this.state.practical2!=''){
+        practical_mark=((item.assessment)/item.max_mark)*this.state.practical2;
+        
+        }
+
+
                     acc[key].marks_obtained.push({
                         subjectId: item.subject_id,
                         marks: item.marks_obtained,
-                        theory: item.theory,
-                        internal: item.internal,
-                        assessment: item.assessment,
+                        theory: theory_mark,
+                        internal: internal_mark,
+                        assessment: practical_mark,
                         max_mark:item.max_mark,
                     });
                     return acc;
@@ -1130,6 +1271,9 @@ HaderPart end
 
                             <div className="form-group col-md-12 text-right">
                                 <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handlePrint2(e)} id="normal" disabled={this.state.isSpinner2}>Print <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner2 ? 'inline' : 'none' }}></span></button>
+
+
+                                <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handleExcel2(e)} id="normal" disabled={this.state.isSpinner20}>Excel <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner20 ? 'inline' : 'none' }}></span></button>
                                 {/* <button type="submit" className="btn btn-success">Save Remark</button> */}
                             </div>
                        
@@ -1219,6 +1363,10 @@ HaderPart end
 					        </div>
                             <div className="form-group col-md-12 text-right">
                                 <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handlePrint(e)} id="normal" disabled={this.state.isSpinner3}>Print <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner3 ? 'inline' : 'none' }}></span></button>
+
+
+
+                                
                                 <button type="submit" className="btn btn-success">Save Remark</button>
                             </div>
                         </>
@@ -1496,6 +1644,12 @@ HaderPart end
 
                                             <div className="form-group col-md-12 text-right">
                                                 <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handlePrint(e,`${this.state.student_id}`)} id="normal" disabled={this.state.isSpinner2}>Print <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner2 ? 'inline' : 'none' }}></span></button>
+
+
+
+                                                <button type="button" className="btn btn-danger mr-2"  onClick={(e) => this.handleExcel(e,`${this.state.student_id}`)} id="normal" disabled={this.state.isSpinner20}>Excel <span className="kt-spinner kt-spinner--sm kt-spinner--right kt-spinner--light" style={{ display: this.state.isSpinner20 ? 'inline' : 'none' }}></span></button>
+
+                                                
                                                 {/* <button type="submit" className="btn btn-success">Save Remark</button> */}
                                             </div>
                                         </>

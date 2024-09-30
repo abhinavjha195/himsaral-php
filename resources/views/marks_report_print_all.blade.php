@@ -1,3 +1,5 @@
+
+@foreach ($data as $da)
 <!DOCTYPE html>
 <html>
 
@@ -202,7 +204,7 @@
 
 <body>
     <div class="print-area">
-    @foreach ($data as $da)
+  
     <table class="noborder" style="margin-left:auto;margin-right:auto;width:580px;position: relative;">
             <tr>
                 <td>
@@ -262,21 +264,91 @@
 @endphp
             @foreach ($da['subjects'] as $subject) <!-- Loop through subjects -->
                      
+            @php
+            $intenal_mark=0;
+            $assesment_mark=0;
+            $sub_mark=0;
+            @endphp
                             <tr>
                                 <td>{{ $subject['subjectName'] }}</td>
+                                @if($by_internal == '')
                                 <td>{{ $subject['internal'] }}</td>
+
+
+                                @else
+
+@php
+$intenal_mark = ($subject['internal']/$subject['max_mark'])*$by_internal;
+@endphp
+<td>{{$intenal_mark}}</td>
+
+@endif
+
+
+@if($by_assesment == '')
                                 <td>{{ $subject['assessment'] }}</td>
-                                <td>{{ $subject['theory'] }}</td>
+
+
+                                @else
+
+@php
+$assesment_mark = ($subject['assessment']/$subject['max_mark'])*$by_assesment;
+@endphp
+<td>{{$assesment_mark}}</td>
+
+@endif
+
+
+
                                
-                                <td>{{ $subject['marks_obtained'] }}</td>
+                                @if($by_theory == '')
+                                <td>{{ $subject['theory'] }}</td>
+                               @else
+
+                               @php
+        $sub_mark = ($subject['marks_obtained']/$subject['max_mark'])*$by_theory;
+        @endphp
+                               <td>{{$sub_mark}}</td>
+
+                               @endif
+
+
+                               @if($by_theory == '')
+                               <td>{{ $subject['marks_obtained'] }}</td>
+                               @else
+
+                               @php
+        $sub_mark = ($subject['marks_obtained']/$subject['max_mark'])*$by_theory;
+        @endphp
+                               <td>{{$sub_mark}}</td>
+
+                               @endif
+
+
+
+                                
                                 
                             </tr>
+                           
+
+
+                            @if($by_theory == '' && $by_internal=='' && $by_assesment == '')
                             @php
-        $totalMarksObtained += $subject['marks_obtained'];
+                            $totalMarksObtained += $subject['marks_obtained'];
         $max_marks += $subject['max_mark'];
-  
-    $percentage = ($max_marks > 0) ? ($totalMarksObtained / $max_marks) * 100 : 0;
+        @endphp
+
+        @else
+      
+        @php
+        $totalMarksObtained += $sub_mark+$intenal_mark+$assesment_mark;
+
+$max_marks += $subject['max_mark'];
 @endphp
+        @endif
+        @php
+    $percentage = ($max_marks > 0) ? ($totalMarksObtained / $max_marks) * 100 : 0;
+    @endphp
                     @endforeach
               
             </tbody>
@@ -318,10 +390,12 @@
             </tr>
         </table>
 
-         <!-- Add page break here -->
-    <div style="page-break-after: always;"></div>
-        @endforeach
+       
     </div>
 </body>
 
 </html>
+
+        @endforeach
+          <!-- Add page break here -->
+  <!-- <div style="page-break-after: always;"></div> -->

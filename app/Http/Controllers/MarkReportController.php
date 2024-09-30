@@ -22,6 +22,7 @@ use PDF;
 use Helper;
 
 use App\Exports\AllExamMarkReportExport;
+use App\Exports\SingleExamMarkReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -404,12 +405,21 @@ class MarkReportController extends Controller
     {
 
         $data = ExamDateSheet::leftJoin('exam_date_sheet_marks as ed', 'exam_date_sheet.id', '=', 'ed.sheet_id')
+        
     ->leftJoin('subject_master as sm', 'ed.subject_id', '=', 'sm.subjectId')
     ->leftJoin('student_master as st', 'ed.student_id', '=', 'st.id')
+   // ->leftJoin('exam_date_sheet_desc as edsc',  'edsc.row_id', '=','exam_date_sheet.id')
+   
     ->where('exam_date_sheet.exam_id', $request->exam_id)
     ->where('exam_date_sheet.course_id', $request->course_id)
     ->where('exam_date_sheet.class_id', $request->class_id)
     ->where('exam_date_sheet.section_id', $request->section_id)
+   // ->where('edsc.exam_idd', $request->exam_id)
+    // ->leftJoin('edsc',  'edsc.sub_id', '=','sm.subjectId')
+   //  ->leftJoin('exam_date_sheet_desc as edsc',  'edsc.row_id', '=','exam_date_sheet.id')
+    // ->leftJoin('exam_date_sheet_desc as edsc',  'edsc.row_id', '=','exam_date_sheet.id')
+    // ->where('exam_date_sheet_desc.exam_id', $request->exam_id)
+    
     ->select('st.id as student_id', 'st.student_name as student_name', 'sm.subjectName', 'sm.subjectId','ed.marks_obtained','exam_date_sheet.max_mark','st.student_name','st.mother_name','st.father_name','st.dob','st.admission_no','st.roll_no','ed.theory','ed.assessment','ed.internal')
     ->orderBy('st.id', 'asc')
     ->get();
@@ -433,6 +443,7 @@ $groupedData = $data->groupBy('student_id')->map(function ($group) {
                 'assessment' => $item->assessment,
                 'internal' => $item->internal,
                 'max_mark' => $item->max_mark
+               
             ];
         })
     ];
@@ -443,13 +454,34 @@ $groupedData = $data->groupBy('student_id')->map(function ($group) {
 
 $school=School::where('school_code','S110')->get();
 
+$by_theory='';
+$by_internal='';
+$by_assesment='';
+
+if($request->theory){
+    $by_theory=$request->theory;
+}
+if($request->internal){
+    $by_internal=$request->internal;
+}
+
+if($request->assesment){
+    $by_assesment=$request->assesment;
+}
+
+
+
+//   print('<pre>');
+//  print_r($groupedData);
+//  print('<pre>');
+
                       $receipt_name=time().rand(1,99).'.'.'pdf'; 
                       $customPaper = [0, 0, 505.28, 841.89];
          
-                  $pdf = PDF::loadView("marks_report_print_all",['data' => $groupedData,'school'=>$school])
-                             ->setPaper($customPaper)
+                  $pdf = PDF::loadView("marks_report_print_all",['data' => $groupedData,'school'=>$school,'by_theory'=>$by_theory,'by_internal'=>$by_internal,'by_assesment'=>$by_assesment])
+                          ->setPaper($customPaper)
                             ->setOptions(['margin-left' => 0, 'margin-right' => 0, 'margin-top' => 0, 'margin-bottom' => 0])
-                            ->save(public_path("marks_report/all_marks/$receipt_name"));
+                          ->save(public_path("marks_report/all_marks/$receipt_name"));
          
 
 
@@ -513,7 +545,7 @@ $groupedData = $data->groupBy('student_id')->map(function ($group) {
         'roll_no' => $group->first()->roll_no,
         'subjects' => $group->map(function ($item) {
             return [
-                'subjectId' => $item->subjectId,
+                'subjectId' => $item->subjectId, 
                 'subjectName' => $item->subjectName,
                 'marks_obtained' => $item->marks_obtained,
                 'theory' => $item->theory,
@@ -540,7 +572,7 @@ $grade_by=$request->grade_by;
 
 
                       $receipt_name=time().rand(1,99).'.'.'pdf'; 
-                      $customPaper = [0, 0, 505.28, 841.89];
+                      $customPaper = [0, 0, 505.28, 941.89];
          
                   $pdf = PDF::loadView("marks_report_print_all_exam",['data' => $groupedData,'school'=>$school,'exams'=>$exams,'grades'=>$grades,'grade_by'=>$grade_by])
                              ->setPaper($customPaper)
@@ -567,11 +599,195 @@ $grade_by=$request->grade_by;
 
     public function ExcelStudentAllExam(Request $request)
     {
-        $filename = 'student_exam_report_' . time() . '.xlsx';
+
+
+
+
+
+
+
+
+
+        $data = ExamDateSheet::leftJoin('exam_date_sheet_marks as ed', 'exam_date_sheet.id', '=', 'ed.sheet_id')
+        ->leftJoin('subject_master as sm', 'ed.subject_id', '=', 'sm.subjectId')
+        ->leftJoin('student_master as st', 'ed.student_id', '=', 'st.id')
+        ->whereIn('exam_date_sheet.exam_id', $request->exam_id)
+        ->where('exam_date_sheet.course_id', $request->course_id)
+        ->where('exam_date_sheet.class_id', $request->class_id)
+        ->where('exam_date_sheet.section_id', $request->section_id)
+        ->select(
+            'st.id as student_id', 
+            'st.student_name', 
+            'sm.subjectName', 
+            'sm.subjectId', 
+            'ed.marks_obtained', 
+            'exam_date_sheet.max_mark', 
+            'st.mother_name', 
+            'st.father_name', 
+            'st.dob', 
+            'st.admission_no', 
+            'st.roll_no', 
+            'ed.theory', 
+            'ed.assessment', 
+            'ed.internal', 
+            'exam_date_sheet.exam_id' // Include exam_id in the select statement
+        )
+        ->orderBy('st.id', 'asc')
+        ->get();
+    
+ // Transform the results
+$groupedData = $data->groupBy('student_id')->map(function ($group) {
+    return [
+        'student_id' => $group->first()->student_id,
+        'student_name' => $group->first()->student_name,
+        'mother_name' => $group->first()->mother_name,
+        'father_name' => $group->first()->father_name,
+        'dob' => $group->first()->dob,
+        'admission_no' => $group->first()->admission_no,
+        'roll_no' => $group->first()->roll_no,
+        'subjects' => $group->map(function ($item) {
+            return [
+                'subjectId' => $item->subjectId, 
+                'subjectName' => $item->subjectName,
+                'marks_obtained' => $item->marks_obtained,
+                'theory' => $item->theory,
+                'assessment' => $item->assessment,
+                'internal' => $item->internal,
+                'max_mark' => $item->max_mark,
+                'exam_id' => $item->exam_id // Include exam_id in each subject
+            ];
+        })
+    ];
+})->values()->toArray(); // Convert back to array if needed
+
+// Now $groupedData will have the desired format
+
+
+$school=School::where('school_code','S110')->get();
+
+$exam_ids = $request->exam_id; // Array of school codes
+
+$exams = Exam::whereIn('id', $exam_ids)->get();
+$grades = Grade::all();
+$grade_by=$request->grade_by;
+
+
+
+
+                //       $receipt_name=time().rand(1,99).'.'.'pdf'; 
+                //       $customPaper = [0, 0, 505.28, 841.89];
+         
+                //   $pdf = PDF::loadView("marks_report_print_all_exam",['data' => $groupedData,'school'=>$school,'exams'=>$exams,'grades'=>$grades,'grade_by'=>$grade_by])
+                //              ->setPaper($customPaper)
+                //           ->setOptions(['margin-left' => 0, 'margin-right' => 0, 'margin-top' => 0, 'margin-bottom' => 0])
+                //            ->save(public_path("marks_report/all_exam_marks/$receipt_name"));
+         
+
+
+
+
+
+
+
+
+
+
+
+
+
+$data = $groupedData;
+$school =$school;
+
+$exams=$exams; $grades=$grades;
+$grade_by=$grade_by;
+
+      //  $filename = 'student_exam_report_' . time() . '.xlsx';
         
+      $export = new AllExamMarkReportExport($data, $exams, $grades, $grade_by);
+
+//        print("<pre>");
+//   print_r($groupedData);
+//   print("<pre>");
+// die();
+
+      // Return Excel download response
+      return Excel::download($export, 'student_exam_report.xlsx');
         // Return Excel download
-        return Excel::download(new AllExamMarkReportExport($request), $filename);
+        //return Excel::download(new AllExamMarkReportExport($request), $filename);
     }
+
+
+
+
+
+
+
+    public function ExcelStudentSingleExam(Request $request)
+    {
+
+
+
+
+
+        $data = ExamDateSheet::leftJoin('exam_date_sheet_marks as ed', 'exam_date_sheet.id', '=', 'ed.sheet_id')
+        ->leftJoin('subject_master as sm', 'ed.subject_id', '=', 'sm.subjectId')
+        ->leftJoin('student_master as st', 'ed.student_id', '=', 'st.id')
+        ->where('exam_date_sheet.exam_id', $request->exam_id)
+        ->where('exam_date_sheet.course_id', $request->course_id)
+        ->where('exam_date_sheet.class_id', $request->class_id)
+        ->where('exam_date_sheet.section_id', $request->section_id)
+        ->select('st.id as student_id', 'st.student_name as student_name', 'sm.subjectName', 'sm.subjectId','ed.marks_obtained','exam_date_sheet.max_mark','st.student_name','st.mother_name','st.father_name','st.dob','st.admission_no','st.roll_no','ed.theory','ed.assessment','ed.internal')
+        ->orderBy('st.id', 'asc')
+        ->get();
+    
+    // Transform the results
+    $groupedData = $data->groupBy('student_id')->map(function ($group) {
+        return [
+            'student_id' => $group->first()->student_id,
+            'student_name' => $group->first()->student_name,
+            'mother_name' => $group->first()->mother_name,
+            'father_name' => $group->first()->father_name,
+            'dob' => $group->first()->dob,
+            'admission_no' => $group->first()->admission_no,
+            'roll_no' => $group->first()->roll_no,
+            'subjects' => $group->map(function ($item) {
+                return [
+                    'subjectId' => $item->subjectId,
+                    'subjectName' => $item->subjectName,
+                    'marks_obtained' => $item->marks_obtained,
+                    'theory' => $item->theory,
+                    'assessment' => $item->assessment,
+                    'internal' => $item->internal,
+                    'max_mark' => $item->max_mark
+                ];
+            })
+        ];
+    })->values()->toArray(); // Convert back to array if needed
+    
+    // Now $groupedData will have the desired format
+    
+    
+    $school=School::where('school_code','S110')->get();
+
+
+
+
+
+
+
+
+
+
+
+$students = $groupedData;
+// print("<pre>");
+//  print_r($groupedData);
+//  print("<pre>");
+// die();
+   return Excel::download(new SingleExamMarkReportExport($students, $school), 'student_exam_report.xlsx');
+    }
+
+
 
 
 
