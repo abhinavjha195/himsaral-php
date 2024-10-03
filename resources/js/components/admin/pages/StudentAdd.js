@@ -839,7 +839,43 @@ hasErrorFor (field) {
 			}
 			else
 			{
-				this.setState({ showError: true, showSuccess: false, message: response.data.message,errors:response.data.errors});	 			   
+				this.setState({ showError: true, showSuccess: false, message: response.data.message,errors:response.data.errors});	
+				
+				
+				if(response.data.tab == 1){
+					const element = document.getElementById('per_detail');
+					if (element) {
+					  element.click();
+					}
+				}
+
+				if(response.data.tab == 2){
+					const element = document.getElementById('par_detail');
+					if (element) {
+					  element.click();
+					}
+				}
+
+				if(response.data.tab == 3){
+					const element = document.getElementById('adm_detail');
+					if (element) {
+					  element.click();
+					}
+				}
+
+				if(response.data.tab == 4){
+					const element = document.getElementById('sub_detail');
+					if (element) {
+					  element.click();
+					}
+				}
+
+				if(response.data.tab == 5){
+					const element = document.getElementById('mis_detail');
+					if (element) {
+					  element.click();
+					}
+				}
 			}
 		})
 		.catch(err => {  	   
@@ -1173,11 +1209,11 @@ HaderPart end
               <div className="profile-tab">
                 <div className="custom-tab-1">
                   <ul className="nav nav-tabs">
-                    <li className="nav-item"><a href="#personal-details" onClick={(e) => this.handleTab(e,'personal_detail')} data-toggle="tab" className="nav-link active show">Personal Details</a></li>	
-                    <li className="nav-item"><a href="#parents-details" onClick={(e) => this.handleTab(e,'parents_detail')}  data-toggle="tab" className="nav-link">Parents Details</a></li>
-                    <li className="nav-item"><a href="#admission-details" onClick={(e) => this.handleTab(e,'admission_detail')} data-toggle="tab" className="nav-link">Admission Details</a></li>
-                    <li className="nav-item"><a href="#subjects-details" onClick={(e) => this.handleTab(e,'subject_detail')} data-toggle="tab" className="nav-link">Subjects Details</a></li>
-                    <li className="nav-item"><a href="#settings" onClick={(e) => this.handleTab(e,'miscellaneous_detail')} data-toggle="tab" className="nav-link">Misc. Settings</a></li>	  			
+                    <li className="nav-item"><a href="#personal-details" onClick={(e) => this.handleTab(e,'personal_detail')} data-toggle="tab" className="nav-link active show" id="per_detail">Personal Details</a></li>	
+                    <li className="nav-item"><a href="#parents-details" onClick={(e) => this.handleTab(e,'parents_detail')}  data-toggle="tab" className="nav-link" id="par_detail">Parents Details</a></li>
+                    <li className="nav-item"><a href="#admission-details" onClick={(e) => this.handleTab(e,'admission_detail')} data-toggle="tab" className="nav-link" id="adm_detail">Admission Details</a></li>
+                    <li className="nav-item"><a href="#subjects-details" onClick={(e) => this.handleTab(e,'subject_detail')} data-toggle="tab" className="nav-link" id="sub_detail">Subjects Details</a></li>
+                    <li className="nav-item"><a href="#settings" onClick={(e) => this.handleTab(e,'miscellaneous_detail')} data-toggle="tab" className="nav-link" id="mis_detail">Misc. Settings</a></li>	  			
                   </ul>
                   <div className="tab-content">
                     <div id="personal-details" className="tab-pane fade active show">

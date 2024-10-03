@@ -93,7 +93,7 @@ class StudentMasterController extends Controller
 
     }
 
-	public function add(Request $request)
+	public function add_old(Request $request)
 	{
 		$inputs=$request->all();
 		$tab=$request->tab;
@@ -1969,6 +1969,761 @@ class StudentMasterController extends Controller
 		else {
 			return response()->json(["status"=>"failed","success"=>false,"message"=>"Whoops! no record found"]);
 		}
+	}
+
+
+
+
+
+
+
+
+	public function add(Request $request)
+	{
+		$inputs=$request->all();
+		$tab=$request->tab;
+		$action=$request->button;
+		$school_id=$request->school_id;
+		$insert_id=empty($request->insert_id)?'':$request->insert_id;
+		$registration_id=empty($request->registration_id)?'':$request->registration_id;
+		$image_name = empty($request->s_image)?'':$request->s_image;
+		$image_name1= empty($request->f_image)?'':$request->f_image;
+		$image_name2= empty($request->m_image)?'':$request->m_image;
+		$image_rule = $image_rule1= $image_rule2=$email_rule="";
+
+		if($insert_id)
+		{
+			$info = StudentMaster::where('id',$insert_id)->get();
+		}
+
+		if($tab=='personal_detail')
+		{
+			if($insert_id)
+			{
+				$email_rule=($request->email==$info[0]->email)?'required|max:255':'required|unique:student_master|max:255';
+			}
+			else
+			{
+				$email_rule='required|unique:student_master|max:255';
+			}
+
+			if($request->file('student_image')!=null)
+			{
+				$image_rule = 'required|image|mimes:jpeg,png,jpg|max:5120';
+			}
+
+			$rules=[
+				'student_image' => $image_rule,
+				'student_name' => 'required',
+				'dob' => 'required',
+				'gender' => 'required',
+				'nationality' => 'required',
+				// 'marital_status'=>'required',
+				// 'account_no' => 'required',
+				// 'ifsc' => 'required',
+				// 'branch_address' => 'required',
+				// 'caste' => 'required',
+				// 'religion' => 'required',
+				// 'mobile' => 'required',
+				// 'email' => $email_rule,
+				// 'blood_group' => 'required',
+				'aadhar_no' => 'required',
+				// 'permanent_address' => 'required',
+				// 'state_id' => 'required',
+				// 'district_id' => 'required',
+				// 'pincode' => 'required'
+			];
+
+			$fields = [
+				'student_image' => 'Student Image',
+				'student_name' => 'Student Name',
+				'dob' => 'Date of Birth',
+				'gender' => 'Gender',
+				'nationality' => 'Nationality',
+				'marital_status' => 'Maritial Status',
+				'account_no' => 'Account No.',
+				'ifsc' => 'IFSC Code',
+				'branch_address' => 'Branch Address',
+				'caste' => 'Caste',
+				'religion' => 'Religion',
+				'mobile' => 'Mobile No.',
+				'email' => 'Email',
+				'blood_group' => 'Blood Group',
+				'aadhar_no' => 'Aadhar No.',
+				'permanent_address' => 'Permanent Address',
+				'state_id' => 'State',
+				'district_id' => 'District',
+				'pincode' => 'Pincode'
+			];
+
+			$messages = [
+				'required' => 'The :attribute field is required.',
+			];
+
+			$validator = Validator::make($inputs, $rules, $messages, $fields);
+
+			if ($validator->fails()) {
+				$errors=$validator->errors();
+				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>1);
+				return response()->json($response_arr);
+			}
+	$tab='parents_detail';
+			
+		}
+		if($tab=='parents_detail')
+		{
+			$parent_type=empty($request->parent_type)?'':$request->parent_type;
+			$parent_rule=($parent_type=='new')?'':'required';
+
+			if($request->file('father_image')!=null)
+			{
+				$image_rule1 = 'required|image|mimes:jpeg,png,jpg|max:5120';
+			}
+
+			if($request->file('mother_image')!=null)
+			{
+				$image_rule2 = 'required|image|mimes:jpeg,png,jpg|max:5120';
+			}
+
+			if($insert_id)
+			{
+				$mobile_rule=($request->f_mobile==$info[0]->f_mobile)?'required|max:25':'required|unique:student_master|max:25';
+			}
+			else
+			{
+				$mobile_rule='required|unique:student_master|max:25';
+			}
+
+			$rules=[
+				'parent_type' => 'required',
+				'sibling_admission_no' => $parent_rule,
+				'sibling_no' => $parent_rule,
+				'father_image' => $image_rule1,
+				'mother_image' => $image_rule2,
+				'father_name' => 'required',
+				'mother_name' => 'required',
+				// 'f_occupation' => 'required',
+				// 'f_income' => 'required',
+				// 'f_designation' => 'required',
+				'f_mobile' => $mobile_rule,
+				// 'f_email' => 'required',
+				'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+			];
+
+			$messages = [
+				'required' => 'The :attribute field is required.',
+			];
+
+			$fields = [
+				'parent_type' => 'Parent Type',
+				'sibling_admission_no' => 'Sibling Admission No.',
+				'sibling_no' => 'Sibling Child',
+				'father_image' => 'Father Image',
+				'mother_image' => 'Mother Image',
+				'father_name' => 'Father Name',
+				'mother_name' => 'Mother Name',
+				'f_occupation' => "Father's Occupation",
+				'f_income' => "Father's Annual Income",
+				'f_designation' => 'Designation',
+				'f_mobile' => 'Mobile No (For SMS)',
+				'f_email' => 'E-Mail ID',
+			];
+			$validator = Validator::make($inputs, $rules, $messages, $fields);
+
+			if ($validator->fails()) {
+				$errors=$validator->errors();
+				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>2);
+				return response()->json($response_arr);
+			}
+			$tab='admission_detail';
+		}
+      if($tab=='admission_detail')
+		{
+			$course_id=empty($request->course_id)?'':$request->course_id;
+			$class_id=empty($request->class_id)?'':$request->class_id;
+			$section_id=empty($request->section_id)?'':$request->section_id;
+
+			//echo '1';
+			if($insert_id)
+			{
+				$admsn_rule=($request->admission_no==$info[0]->admission_no)?'required|max:255':'required|unique:student_master|max:255';
+
+				// $roll_rule=($request->roll_no==$info[0]->roll_no)?['required']:['required', new uniqueRollNo($course_id,$class_id,$section_id)];
+				//echo '3';
+			}
+			else
+			{
+				$admsn_rule='required|unique:student_master|max:255';
+				//$roll_rule=['required', new uniqueRollNo($course_id,$class_id,$section_id)];
+				//echo '4';
+			}
+
+			$rules=[
+				 'admission_date' => 'required',
+				// 'admission_no' => $admsn_rule,
+				'course_id' => 'required',
+				'class_id' => 'required',
+				'section_id' => 'required',
+				// 'roll_no' => 'required',
+				// 'roll_no' => $roll_rule,
+				// 'registration_no' => 'required',
+				// 'board_roll_no' => 'required',
+				// 'leaving_certificate' => 'required',
+				// 'course_first' => 'required',
+				// 'class_first' => 'required'
+			];
+
+			$fields = [
+				'admission_date' => 'Date of Admission',
+				'admission_no' => 'Admission No.',
+				'course_id' => 'Course Name',
+				'class_id' => 'Class Name',
+				'section_id' => 'Section Name',
+				// 'roll_no' => 'Student Roll No.',
+				// 'registration_no' => 'Registration No.',
+				// 'board_roll_no' => 'Board Roll No.',
+				// 'leaving_certificate' => 'School Leaving Certificate',
+				// 'course_first' => 'Course At the time of Admission',
+				// 'class_first' => 'Class At the time of Admission'
+			];
+
+			$messages = [
+				'required' => 'The :attribute field is required.',
+			];
+			//echo '5';
+			$validator = Validator::make($inputs, $rules, $messages, $fields);
+			if ($validator->fails()) {
+				$errors=$validator->errors();
+				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>3);
+				return response()->json($response_arr);
+			}
+			$tab='subject_detail';
+		}
+		if($tab=='subject_detail')
+		{
+			$rules=[
+				'compulsary' => ''
+			];
+
+			$messages = [
+				'required' => 'The :attribute field is required.',
+			];
+
+			$fields = [
+				'compulsary' => 'Compulsory Subjects'
+			];
+			$validator = Validator::make($inputs, $rules, $messages, $fields);
+			if ($validator->fails()) {
+				$errors=$validator->errors();
+				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>4);
+				return response()->json($response_arr);
+			} 
+
+			else
+		{
+			$school=School::where('id',$school_id)->get();
+			$fiscal_yr=Helper::getFiscalYear(date('m'));
+			$fiscal_arr=explode(':',$fiscal_yr);
+			$fiscalYear=SessionMaster::where('session_start',$fiscal_arr[0])->where('session_end',$fiscal_arr[1])->get();
+			$fiscal_id=(count($fiscalYear)>0)?$fiscalYear[0]->id:0;
+
+			if($request->hasFile('student_image'))
+			{
+				$image  = $request->file('student_image');
+
+				/* $height = Image::make($image)->height();
+				$width = Image::make($image)->width();    */
+
+				$imageDimensions = getimagesize($image);
+
+				$width = $imageDimensions[0];
+				$height = $imageDimensions[1];
+
+				$new_height = Helper::setDimension($height);
+				$new_width = Helper::setDimension($width);
+
+				$image_name = time().rand(3, 9).'.'.$image->getClientOriginalExtension();
+				$imgFile = Image::make($image->getRealPath());
+
+				$destinationPath1 = public_path().'/uploads/student_image/';
+				$destinationPath2 = public_path().'/uploads/student_image/thumbnail/';
+
+				$image->move($destinationPath1,$image_name);
+
+				$imgFile->resize($new_height,$new_width, function ($constraint) {
+					$constraint->aspectRatio();
+				})->save($destinationPath2.$image_name);
+
+			}
+
+			if($request->hasFile('father_image'))
+			{
+				$f_image  = $request->file('father_image');
+				$imgFile = Image::make($f_image->getRealPath());
+				$imageDimensions = getimagesize($f_image);
+
+				$width = $imageDimensions[0];
+				$height = $imageDimensions[1];
+
+				$new_height = Helper::setDimension($height);
+				$new_width = Helper::setDimension($width);
+
+				$image_name1 = time().rand(3, 9).'.'.$f_image->getClientOriginalExtension();
+
+				$destinationPath1 = public_path().'/uploads/father_image/';
+				$destinationPath2 = public_path().'/uploads/father_image/thumbnail/';
+
+				$f_image->move($destinationPath1,$image_name1);
+
+				$imgFile->resize($new_height,$new_width, function ($constraint) {
+					$constraint->aspectRatio();
+				})->save($destinationPath2.$image_name1);
+
+			}
+			if($request->hasFile('mother_image'))
+			{
+				$m_image = $request->file('mother_image');
+				$imgFile = Image::make($m_image->getRealPath());
+				$imageDimensions = getimagesize($m_image);
+
+				$width = $imageDimensions[0];
+				$height = $imageDimensions[1];
+
+				$new_height = Helper::setDimension($height);
+				$new_width = Helper::setDimension($width);
+
+				$image_name2 = time().rand(3, 9).'.'.$m_image->getClientOriginalExtension();
+
+				$destinationPath1 = public_path().'/uploads/mother_image/';
+				$destinationPath2 = public_path().'/uploads/mother_image/thumbnail/';
+
+				$m_image->move($destinationPath1,$image_name2);
+
+				$imgFile->resize($new_height,$new_width, function ($constraint) {
+					$constraint->aspectRatio();
+				})->save($destinationPath2.$image_name2);
+
+			}
+
+		
+				if($insert_id)
+				{
+
+					$parent_type=empty($request->parent_type)?$info[0]->parent_type:$request->parent_type;
+					$sibling_admission_no = ($parent_type=='new')?"":((empty($request->sibling_admission_no))?"":$request->sibling_admission_no);
+					$sibling_no = ($parent_type=='new')?"":((empty($request->sibling_no))?"":$request->sibling_no);
+
+
+
+					$transportation=empty($request->transportation)?$info[0]->transportation:$request->transportation;
+					$transport_concession=empty($request->transport_concession)?$info[0]->transport_concession:$request->transport_concession;
+					$staffchild=empty($request->staffchild)?'no':$request->staffchild;
+
+					$station_id = ($transportation=='no')?"":((empty($request->station_id))?$info[0]->station_id:$request->station_id);
+					$route_id = ($transportation=='no')?"":((empty($request->route_id))?$info[0]->route_id:$request->route_id);
+					$bus_no = ($transportation=='no')?"":((empty($request->bus_no))?$info[0]->bus_no:$request->bus_no);
+
+					$busfare = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->busfare))?$info[0]->busfare:$request->busfare);
+
+					$transconcession_amount = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->transconcession_amount))?$info[0]->transconcession_amount:$request->transconcession_amount);
+
+					$totalfare = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->totalfare))?$info[0]->totalfare:$request->totalfare);
+
+					$staffchild=empty($request->staffchild)?$info[0]->staffchild:$request->staffchild;
+
+					$child_no = ($staffchild=='no')?"":((empty($request->child_no))?$info[0]->child_no:$request->child_no);
+
+
+					$update_arr=array(
+						'student_name'=>$request->student_name,
+						'dob'=>$request->dob,
+						'gender'=>$request->gender,
+						'nationality'=>$request->nationality,
+						'caste'=>$request->caste,
+						'religion'=>$request->religion,
+						'mobile'=>$request->mobile,
+						'email'=>$request->email,
+						'blood_group'=>$request->blood_group,
+						'aadhar_no'=>$request->aadhar_no,
+						'permanent_address'=>$request->permanent_address,
+						'temporary_address'=>($request->temporary_address)?$request->temporary_address:'',
+						'branch_address'=>($request->branch_address)?$request->branch_address:'',
+						'state_id'=>$request->state_id,
+						'district_id'=>$request->district_id,
+						'pincode'=>$request->pincode,
+						'student_image'=>($image_name=='')?$info[0]->student_image:$image_name,
+						'account_no'=>empty($request->account_no)?'':$request->account_no,
+						'ifsc_no'=>empty($request->ifsc)?'':$request->ifsc,
+						'marital_status'=>empty($request->marital_status)?'':$request->marital_status,
+						'parent_type'=>$parent_type,
+						'sibling_admission_no'=>$sibling_admission_no,
+						'sibling_no'=>$sibling_no,
+						'father_name'=>empty($request->father_name)?$info[0]->father_name:$request->father_name,
+						'mother_name'=>empty($request->mother_name)?$info[0]->mother_name:$request->mother_name,
+						'f_occupation'=>empty($request->f_occupation)?'':$request->f_occupation,
+						'f_income'=>empty($request->f_income)?'':$request->f_income,
+						'f_designation'=>empty($request->f_designation)?'':$request->f_designation,
+						'f_mobile'=>empty($request->f_mobile)?'':$request->f_mobile,
+						'f_email'=>empty($request->f_email)?'':$request->f_email,
+						'residence_no'=>empty($request->residence_no)?'':$request->residence_no,
+						'father_image'=>($image_name1=='')?$info[0]->father_image:$image_name1,
+						'mother_image'=>($image_name2=='')?$info[0]->mother_image:$image_name2,
+						'admission_date'=>$request->admission_date,
+						'admission_no'=>$request->admission_no,
+						'course_id'=>$request->course_id,
+						'class_id'=>$request->class_id,
+						'section_id'=>$request->section_id,
+						'roll_no'=>$request->roll_no,
+						'registration_no'=>$request->registration_no,
+						'board_roll_no'=>$request->board_roll_no,
+						'leaving_certificate'=>$request->leaving_certificate,
+						'course_first'=>$request->course_first,
+						'class_first'=>$request->class_first,
+						'compulsary_set'=>empty($request->compulsary)?'':$request->compulsary,
+						'elective_set'=>empty($request->elective)?'':$request->elective,
+						'additional_set'=>empty($request->additional)?'':$request->additional,
+						'transportation'=>$transportation,
+						'station_id'=>$station_id,
+						'route_id'=>$route_id,
+						'bus_no'=>$bus_no,
+						'busfare'=>$busfare,
+						'transconcession_amount'=>$transconcession_amount,
+						'totalfare'=>$totalfare,
+						'transport_concession'=>$transport_concession,
+						'staffchild'=>$staffchild,
+						'child_no'=>$child_no,
+						'applicable'=>empty($request->applicable)?'':$request->applicable,
+						'management_concession'=>empty($request->management_concession)?'':$request->management_concession,
+					);
+
+					$update=StudentMaster::where('id',$insert_id)->update($update_arr);
+					$data_arr['insert_id']=$insert_id;
+
+					$checkCredit = ParentLogin::selectRaw('count(*) as row_count')
+					->where('s_id',$insert_id)
+					->get();
+
+	   if($checkCredit[0]->row_count>0)
+	   {
+		   $parent_credential=array(
+			   'mobile_no'=>$request->f_mobile,
+			   // 'password' => Hash::make($request->mobile_no)
+			   'password' => Hash::make('htl@0097')
+
+		   );
+
+		   $credential=ParentLogin::where('s_id',$insert_id)->update($parent_credential);
+	   }
+	   else
+	   {
+		   $parent_credential=array(
+			   's_id'=>$insert_id,
+			   'mobile_no'=>$request->f_mobile,
+			   // 'password' => Hash::make($request->mobile_no)
+			   'password' => Hash::make('htl@0097')
+		   );
+
+		   ParentLogin::create($parent_credential);
+	   }
+
+
+
+					if($action=='saveprint')
+					{
+						$school=School::where('id',$school_id)->get();
+						$registration = StudentMaster::leftJoin('student_master as sm','student_master.sibling_admission_no','=','sm.admission_no')
+								->leftJoin('course_master as cm','student_master.course_id','=','cm.courseId')
+								->leftJoin('class_master as cl','student_master.class_id','=','cl.classId')
+								->selectRaw("student_master.*,ifnull(sm.student_name,'N/A') AS sibling_name,ifnull(sm.admission_no,'N/A') AS sibling_admission_number,cm.courseName,cl.className")
+								->where('student_master.id',$insert_id)
+								->get();
+
+						$page_data = array('school'=>$school,'student'=>$registration);
+						$slip_name=time().rand(1,99).'.'.'pdf';
+						$data_arr['print_id']=$slip_name;
+						$pdf = PDF::loadView("admission_form",$page_data)->save(public_path("admissions/$slip_name"));
+
+						$message="student details saved, admission form generated.";
+
+					}
+					else
+					{
+						$message="student details updated successfully";
+						$data_arr['print_id']="";
+					}
+					if($update)
+					{
+						$response_arr=array("status"=>'successed',"success"=>true,"errors"=>[],"message"=>$message,"data" =>$data_arr);
+					}
+					else
+					{
+						$message="could not saved!!";
+						$response_arr=array("status"=>'failed',"success"=>false,"errors"=>[],"message"=>$message,"data"=>[]);
+					}
+
+				}
+				else
+				{
+
+					$parent_type=empty($request->parent_type)?'':$request->parent_type;
+					$sibling_admission_no = ($parent_type=='new')?"":((empty($request->sibling_admission_no))?"":$request->sibling_admission_no);
+					$sibling_no = ($parent_type=='new')?"":((empty($request->sibling_no))?"":$request->sibling_no);
+
+
+					$transportation=empty($request->transportation)?'no':$request->transportation;
+					$transport_concession=empty($request->transport_concession)?'no':$request->transport_concession;
+					$staffchild=empty($request->staffchild)?'no':$request->staffchild;
+
+					$station_id = ($transportation=='no')?"":((empty($request->station_id))?"":$request->station_id);
+					$route_id = ($transportation=='no')?"":((empty($request->route_id))?"":$request->route_id);
+					$bus_no = ($transportation=='no')?"":((empty($request->bus_no))?"":$request->bus_no);
+
+					$busfare = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->busfare))?"":$request->busfare);
+
+					$transconcession_amount = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->transconcession_amount))?"":$request->transconcession_amount);
+
+					$busfare = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->busfare))?"":$request->busfare);
+
+					$totalfare = ($transportation=='no' || $transport_concession=='no')?"":((empty($request->totalfare))?"":$request->totalfare);
+
+					$staffchild=empty($request->staffchild)?'no':$request->staffchild;
+
+					$child_no = ($staffchild=='no')?"":((empty($request->child_no))?"":$request->child_no);
+
+
+
+
+					$insert_arr=array(
+						'student_name'=>$request->student_name,
+						'dob'=>$request->dob,
+						'gender'=>$request->gender,
+						'nationality'=>$request->nationality,
+						'caste'=>$request->caste,
+						'religion'=>$request->religion,
+						'mobile'=>$request->mobile,
+						'email'=>$request->email,
+						'blood_group'=>$request->blood_group,
+						'aadhar_no'=>$request->aadhar_no,
+						'permanent_address'=>$request->permanent_address,
+						'temporary_address'=>empty($request->temporary_address)?'':$request->temporary_address,
+						'branch_address'=>empty($request->branch_address)?'':$request->branch_address,
+						'account_no'=>empty($request->account_no)?'':$request->account_no,
+						'ifsc_no'=>empty($request->ifsc)?'':$request->ifsc,
+						'marital_status'=>empty($request->marital_status)?'':$request->marital_status,
+						'state_id'=>$request->state_id,
+						'district_id'=>$request->district_id,
+						'registration_id'=>$request->registration_id,
+						'pincode'=>$request->pincode,
+						'student_image'=>$image_name,
+					
+						'session_id' => $fiscal_id,
+						'school_id'=> $school_id,
+						'parent_type'=>$parent_type,
+						'sibling_admission_no'=>$sibling_admission_no,
+						'sibling_no'=>$sibling_no,
+						'father_name'=>empty($request->father_name)?'':$request->father_name,
+						'mother_name'=>empty($request->mother_name)?'':$request->mother_name,
+						'f_occupation'=>empty($request->f_occupation)?'':$request->f_occupation,
+						'f_income'=>empty($request->f_income)?0:$request->f_income,
+						'f_designation'=>empty($request->f_designation)?'':$request->f_designation,
+						'f_mobile'=>empty($request->f_mobile)?'':$request->f_mobile,
+						'f_email'=>empty($request->f_email)?'':$request->f_email,
+						'residence_no'=>empty($request->residence_no)?'':$request->residence_no,
+						'father_image'=>$image_name1,
+						'mother_image'=>$image_name2,
+						'registration_id'=>$request->registration_id,
+						
+						'status'=>1,
+						'admission_date'=>$request->admission_date,
+						'admission_no'=>$request->admission_no,
+						'course_id'=>$request->course_id,
+						'class_id'=>$request->class_id,
+						'section_id'=>$request->section_id,
+						'registration_id'=>$request->registration_id,
+						'roll_no'=>$request->roll_no,
+						'registration_no'=>$request->registration_no,
+						'board_roll_no'=>$request->board_roll_no,
+						'leaving_certificate'=>$request->leaving_certificate,
+						'course_first'=>$request->course_first,
+						'class_first'=>$request->class_first,
+						'compulsary_set'=>empty($request->compulsary)?'':$request->compulsary,
+						'elective_set'=>empty($request->elective)?'':$request->elective,
+						'additional_set'=>empty($request->additional)?'':$request->additional,
+						'transportation'=>$transportation,
+						'station_id'=>$station_id,
+						'route_id'=>$route_id,
+						'registration_id'=>$request->registration_id,
+						'bus_no'=>$bus_no,
+						'busfare'=>$busfare,
+						'transconcession_amount'=>$transconcession_amount,
+						'totalfare'=>$totalfare,
+						'transport_concession'=>$transport_concession,
+						'staffchild'=>$staffchild,
+						'child_no'=>$child_no,
+						'applicable'=>empty($request->applicable)?'':$request->applicable,
+						'management_concession'=>empty($request->management_concession)?'':$request->management_concession,
+						
+					);
+
+					$register = StudentMaster::create($insert_arr);
+
+					if($register->id)
+					{
+						$data_arr['insert_id']=$register->id;
+
+						$parent_credential=array(
+							's_id'=>$register->id,
+							'mobile_no'=>$request->f_mobile,
+							// 'password' => Hash::make($request->mobile_no)
+                            'password' => Hash::make('htl@0097')
+						);
+
+						$credential = ParentLogin::create($parent_credential);
+
+
+
+
+
+						if($action=='saveprint')
+						{
+							$school=School::where('id',$school_id)->get();
+							$registration = StudentMaster::leftJoin('student_master as sm','student_master.sibling_admission_no','=','sm.admission_no')
+									->leftJoin('course_master as cm','student_master.course_id','=','cm.courseId')
+									->leftJoin('class_master as cl','student_master.class_id','=','cl.classId')
+									->selectRaw("student_master.*,ifnull(sm.student_name,'N/A') AS sibling_name,ifnull(sm.admission_no,'N/A') AS sibling_admission_number,cm.courseName,cl.className")
+									->where('student_master.id',$register->id)
+									->get();
+
+							$page_data = array('school'=>$school,'student'=>$registration);
+							$slip_name=time().rand(1,99).'.'.'pdf';
+							$pdf = PDF::loadView("admission_form",$page_data)->save(public_path("admissions/$slip_name"));
+							$data_arr['print_id']=$slip_name;
+							$message="student details saved, admission form generated.";
+						}
+						else
+						{
+							$data_arr['print_id']="";
+							$message="student details saved successfully";
+						}
+						$response_arr=array("status"=>'successed',"success"=>true,"message"=>$message,"errors"=>[],"data" =>$data_arr);
+					}
+					else
+					{
+						$message="could not saved!!";
+						$response_arr=array("status"=>'failed',"success"=>false,"errors"=>[],"message"=>$message,"data"=>[]);
+					}
+
+				}
+			
+
+
+			//$tab='miscellaneous_detail';
+
+		}
+
+
+
+
+
+
+
+		//  if($tab=='miscellaneous_detail')
+		// {
+		// 	$transportation=empty($request->transportation)?'':$request->transportation;
+		// 	$concession=empty($request->transport_concession)?'':$request->transport_concession;
+		// 	$staff=empty($request->staffchild)?'':$request->staffchild;
+
+		// 	$station_rule=($transportation=='no')?'':'required';
+		// 	$route_rule=($transportation=='no')?'':'required';
+		// 	$vehicle_rule=($transportation=='no')?'':'required';
+		// 	$concession_rule=($transportation=='yes')?'required':'';
+		// 	$fare_rule=($concession=='yes')?'required':'';
+		// 	$trans_rule=($concession=='yes')?'required':'';
+		// 	$total_rule=($concession=='yes')?'required':'';
+		// 	$staff_rule=($staff=='no')?'':'required';
+
+		// 	$rules=[
+		// 		'transportation' => 'required',
+		// 		'station_id'=>$station_rule,
+		// 		'route_id'=>$route_rule,
+		// 		'bus_no'=>$vehicle_rule,
+		// 		'busfare'=>$fare_rule,
+		// 		'transconcession_amount'=>$trans_rule,
+		// 		'totalfare'=>$total_rule,
+		// 		'transport_concession' => $concession_rule,
+		// 		'staffchild' => 'required',
+		// 		'child_no'=>$staff_rule,
+		// 		'management_concession' => 'required',
+		// 		'applicable' => 'required'
+		// 	];
+
+		// 	$fields = [
+		// 		'transportation' => 'Transportation',
+		// 		'station_id' => 'Station',
+		// 		'route_id' => 'Route',
+		// 		'bus_no' => 'Bus No.',
+		// 		'transport_concession' => 'Transportation Concession',
+		// 		'staffchild' => 'Staff Child',
+		// 		'child_no' => 'Staff No.',
+		// 		'management_concession' => 'Management Concession',
+		// 		'applicable' => 'Applicable',
+		// 		'busfare' => 'Station Fare',
+		// 		'transconcession_amount' => 'Concession Amount',
+		// 		'totalfare' => 'After Concession Amount'
+		// 	];
+
+		// 	$messages = [
+		// 		'required' => 'The :attribute field is required.',
+		// 	];
+		// }
+		// else
+		// {
+		// 	$rules=[
+		// 		'images' => 'required',
+		// 		'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+		// 	];
+
+		// 	$messages = [
+		// 		'required' => 'The :attribute field is required.',
+		// 	];
+
+		// 	$fields = [
+		// 		'images' => 'Student Photo Image'
+		// 	];
+		// }
+		// $validator = Validator::make($inputs, $rules, $messages, $fields);
+		// if ($validator->fails()) {
+		// 	$errors=$validator->errors();
+		// 	$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>5);
+		// 	return response()->json($response_arr);
+		// }
+		
+
+		
+		
+		// }
+
+
+
+		
+
+	}
+
+
+
+
+
+
+
+
+
+
+	return response()->json($response_arr);
+
+
+
+
+
 	}
 
 }
