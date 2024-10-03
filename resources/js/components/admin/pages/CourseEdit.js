@@ -56,7 +56,9 @@ class CourseEdit extends Component {
                     console.log(res.data);
                     if (res.data.status == true) {
                         this.setState({ showError: false, showSuccess: true, message: res.data.message });
-                        window.location.href = base_url+"course_list";	
+                        setTimeout(() => {
+                            window.location.href = base_url + "course_list";
+                        }, 2000);
                     }
 
                     if (res.data.status == false) {

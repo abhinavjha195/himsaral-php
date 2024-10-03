@@ -334,7 +334,9 @@ changeCourse(e) {
 		   axios.get(`${base_url}api`+`/class/getclassbycourse/${id}`).then(response => {    		
 				this.setState({  
 					[inp]:id, 
-					classData: response.data.data ? response.data.data :[]	 
+					course_first:id,
+					classData: response.data.data ? response.data.data :[],
+					studentclassData: response.data.data ? response.data.data :[]	 
 				}); 
 			})
 			.catch(error => {  	   
@@ -357,7 +359,7 @@ changeClass(e){
 	
 	if(id !='')
 	{		
-		this.setState({ class_id:id}); 
+		this.setState({ class_id:id,class_first:id}); 
 		
 		axios.get(`${base_url}api`+`/class/getsectionbyclassandcourse/${id}/${courseid}`).then(response => {    	
 			console.log(response); 		
@@ -1686,7 +1688,7 @@ HaderPart end
 											  return (
 												<div key={key} className="form-check form-checkbox">
 													<div className="bg-padd">
-													  <input type="checkbox" className="form-check-input" name="compulsory_subject" onChange={this.handleCompulsary} value={item.subjectId}/>  			
+													  <input type="checkbox" checked className="form-check-input" name="compulsory_subject" onChange={this.handleCompulsary} value={item.subjectId} disabled/>  			
 													  <label className="form-check-label" htmlFor="check1">{item.subjectName}</label>    
 													</div>
 												 </div>    

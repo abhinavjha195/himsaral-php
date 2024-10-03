@@ -133,20 +133,20 @@ class StudentMasterController extends Controller
 				'dob' => 'required',
 				'gender' => 'required',
 				'nationality' => 'required',
-				'marital_status'=>'required',
+				// 'marital_status'=>'required',
 				// 'account_no' => 'required',
 				// 'ifsc' => 'required',
 				// 'branch_address' => 'required',
-				'caste' => 'required',
-				'religion' => 'required',
-				'mobile' => 'required',
-				'email' => $email_rule,
+				// 'caste' => 'required',
+				// 'religion' => 'required',
+				// 'mobile' => 'required',
+				// 'email' => $email_rule,
 				// 'blood_group' => 'required',
 				'aadhar_no' => 'required',
-				'permanent_address' => 'required',
-				'state_id' => 'required',
-				'district_id' => 'required',
-				'pincode' => 'required'
+				// 'permanent_address' => 'required',
+				// 'state_id' => 'required',
+				// 'district_id' => 'required',
+				// 'pincode' => 'required'
 			];
 
 			$fields = [

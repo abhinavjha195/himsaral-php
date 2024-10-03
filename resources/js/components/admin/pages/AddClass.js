@@ -52,7 +52,7 @@ class AddClass extends Component {
 		if (response.data.status === 'failed') {
 		// redirect to the homepage
 		this.setState({
-		 formMessage: response.data.message,
+		//  formMessage: response.data.message,
 		 errors: response.data.errors
 	   })
 		history.push('/')
@@ -267,7 +267,9 @@ ref={this.input} placeholder="Enter class name"/>{this.renderErrorFor('title')}
 
 						</div>
 						<input type="submit" className="btn btn-primary" value="Submit"/>
-						<div className="text-success">{this.state.formMessage}</div>
+						{/* <div className="text-success">{this.state.formMessage}</div>  */}
+
+						{this.state.formMessage!='' ? 	<div className="success">{this.state.formMessage}</div>:null }
 
 					  </form>
 					</div>

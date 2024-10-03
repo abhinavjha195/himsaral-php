@@ -44,11 +44,15 @@ formSubmit(event){
     axios.post(`${base_url}api`+`/add_course_process`,data)  
     .then(res => {  
      console.log(res.data);			
-	 
-     if(res.data.status == true){
-        this.setState({ showError: false,showSuccess:true,message:res.data.message});		
-        window.location.href = base_url+"course_list";		
-     }
+     if (res.data.status == true) {
+      this.setState({ showError: false, showSuccess: true, message: res.data.message });
+  
+      // Delay the redirection by 3 seconds (3000 milliseconds)
+      setTimeout(() => {
+          window.location.href = base_url + "course_list";
+      }, 2000);
+  }
+  
     
      if(res.data.status == false){
         this.setState({ showError: true,showSuccess:false,message:res.data.message});

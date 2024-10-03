@@ -569,12 +569,32 @@ handleExamChange2(event) {
 		axios.get(`${base_url}api`+`/examdatesheet/getcourse/${id}`).then(response => {
 			this.setState({
 				courseList2: response.data.data ? response.data.data :[],
+                section_id2:'',
+                course_id2:'',
+                class_id2:'',
+                exam_id2:'',
                 [inpt]: id,
+                
 				
 			});
 		})
 		.catch(error => {
 		    console.log(error.message);
+
+            this.setState({
+                courseList2:[],
+                classList2:[],
+                sectionList2:[],
+                studentList2:[],
+                section_id2:'',
+                course_id2:'',
+                class_id2:'',
+                exam_id2:'',
+    
+    
+                [inpt]: id,
+                
+            });
 		})
    }
    else
@@ -742,6 +762,7 @@ loadStudent2 = (event) => {
     // const examsString = selectedExams2.join(',');
     const url = `${base_url}api`+`/examdatesheet/compiledsheetMarks/${exam_id2}/${course_id2}/${class_id2}/${id}`;
     const url2 = `${base_url}api`+`/subject_list`;
+   // const url2 = `${base_url}api`+`/class_wise_subject_list`;
 
     this.setState({ isSpinner: true }, () => {
 
@@ -1167,30 +1188,32 @@ HaderPart end
                     
                     }
 
-                    let theory_mark=item.theory;
-                    let internal_mark=item.internal;
-                    let practical_mark=item.assessment;
-
-if(this.state.theory2!=''){
-theory_mark=((item.theory)/item.max_mark)*this.state.theory2;
-
-}
-
-if(this.state.internal2!=''){
-    internal_mark=((item.internal)/item.max_mark)*this.state.internal2;
-    
-    }
-
-
-    if(this.state.practical2!=''){
-        practical_mark=((item.assessment)/item.max_mark)*this.state.practical2;
-        
-        }
+                    let theory_mark = item.theory;
+                    let internal_mark = item.internal;
+                    let practical_mark = item.assessment;
+                    
+                    // Apply the formula only if `theory2`, `internal2`, or `practical2` are not empty
+                    if (this.state.theory2 !== '') {
+                        theory_mark = ((item.theory / item.max_mark) * this.state.theory2).toFixed(2);
+                    }
+                    
+                    if (this.state.internal2 !== '') {
+                        internal_mark = ((item.internal / item.max_mark) * this.state.internal2).toFixed(2);
+                    }
+                    
+                    if (this.state.practical2 !== '') {
+                        practical_mark = ((item.assessment / item.max_mark) * this.state.practical2).toFixed(2);
+                    }
+                    
+                    // Ensure marks_obtained has two digits after the decimal point
+                    let marks_obtained = (parseFloat(theory_mark) + parseFloat(internal_mark) + parseFloat(practical_mark)).toFixed(2);
+                    
+      //  marks_obtained = marks_obtained.toFixed(2);
 
 
                     acc[key].marks_obtained.push({
                         subjectId: item.subject_id,
-                        marks: item.marks_obtained,
+                        marks: marks_obtained,
                         theory: theory_mark,
                         internal: internal_mark,
                         assessment: practical_mark,
