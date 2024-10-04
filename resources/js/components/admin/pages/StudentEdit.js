@@ -1137,6 +1137,15 @@ if (isLoad) {
 		  );
 	});
 
+	const currDate = new Date();		
+
+	var day = ('0' + currDate.getDate()).slice(-2);
+	var month = ('0' + (currDate.getMonth() + 1)).slice(-2);
+	var year = currDate.getFullYear();		
+
+    let date_of_admission= year+'-'+month+'-'+day;	
+	let date_of_birth= year+'-'+month+'-'+day;	
+
 	const style1 = {
       position: "absolute",
       border: "1px solid #d4d4d4",
@@ -1223,7 +1232,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Student Photo</h4></div>
                                 <div className="card-body text-center account-profile">
-                                  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={s_image} alt="" />
+                                  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.s_image)?this.state.s_image:base_url+'images/student.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
                                     <img src={`${base_url}images/upload-icon.png`} alt="" />
@@ -1264,7 +1273,7 @@ HaderPart end
                                         <div className="form-group col-md-6">
                                           <label>Date of Birth</label>
                                           <div className="example">
-                                            <input type="date" className={`form-control input-daterange-timepicker ${this.hasErrorFor('dob') ? 'is-invalid' : ''}`} name="dob"  value={s_dob} onChange={this.handleChange} />
+                                            <input type="date" className={`form-control input-daterange-timepicker ${this.hasErrorFor('dob') ? 'is-invalid' : ''}`} name="dob"  value={(this.state.s_dob)?this.state.s_dob:date_of_birth} onChange={this.handleChange} />
 											{this.renderErrorFor('dob')}
                                           </div>
                                         </div>
@@ -1406,7 +1415,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Father Image</h4></div>
                                 <div className="card-body text-center account-profile">
-								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={f_image} alt="" />
+								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.f_image)?this.state.f_image:base_url+'images/male.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
 									<img src={`${base_url}images/upload-icon.png`} alt="" />
@@ -1423,7 +1432,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Mother Image</h4></div>
                                 <div className="card-body text-center account-profile">
-								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={m_image} alt="" />
+								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.m_image)?this.state.m_image:base_url+'images/female.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
 									<img src={`${base_url}images/upload-icon.png`} alt="" />

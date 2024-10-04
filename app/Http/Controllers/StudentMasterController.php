@@ -1364,25 +1364,25 @@ class StudentMasterController extends Controller
 				}
 
 				$rules=[
-					'student_image' => $image_rule,
+					// 'student_image' => $image_rule,
 					'student_name' => 'required',
 					'dob' => 'required',
 					'gender' => 'required',
-					'nationality' => 'required',
-					'marital_status' => 'required|not_in:0',
+					// 'nationality' => 'required',
+					// 'marital_status' => 'required|not_in:0',
 					// 'account_no' => 'required',
 					// 'ifsc' => 'required',
 					// 'branch_address' => 'required',
-					'caste' => 'required|not_in:0',
-					'religion' => 'required|not_in:0',
-					'mobile' => 'required',
-					'email' => $email_rule,
+					// 'caste' => 'required|not_in:0',
+					// 'religion' => 'required|not_in:0',
+					// 'mobile' => 'required',
+					// 'email' => $email_rule,
 					// 'blood_group' => 'required',
 					'aadhar_no' => 'required',
-					'permanent_address' => 'required',
-					'state_id' => 'required|not_in:0',
-					'district_id' => 'required|not_in:0',
-					'pincode' => 'required'
+					// 'permanent_address' => 'required',
+					// 'state_id' => 'required|not_in:0',
+					// 'district_id' => 'required|not_in:0',
+					// 'pincode' => 'required'
 				];
 
 				$fields = [
@@ -1432,8 +1432,8 @@ class StudentMasterController extends Controller
 					'parent_type' => 'required',
 					'sibling_admission_no' => $parent_rule,
 					'sibling_no' => $parent_rule,
-					'father_image' => $image_rule1,
-					'mother_image' => $image_rule2,
+					// 'father_image' => $image_rule1,
+					// 'mother_image' => $image_rule2,
 					'father_name' => 'required',
 					'mother_name' => 'required',
 					// 'f_occupation' => 'required',
@@ -1441,7 +1441,7 @@ class StudentMasterController extends Controller
 					// 'f_designation' => 'required',
 					'f_mobile' => $mobile_rule,
 					// 'f_email' => 'required',
-					'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+					// 'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
 				];
 
 				$messages = [
@@ -1468,17 +1468,17 @@ class StudentMasterController extends Controller
 				$admsn_rule=($request->admission_no==$info[0]->admission_no)?'required|max:255':'required|unique:student_master|max:255';
 
 				$rules=[
-					'admission_date' => 'required',
-					'admission_no' => $admsn_rule,
+					// 'admission_date' => 'required',
+					// 'admission_no' => $admsn_rule,
 					'course_id' => 'required|not_in:0',
 					'class_id' => 'required|not_in:0',
 					'section_id' => 'required',
 					'roll_no' => 'required',
-					'registration_no' => 'required',
-					'board_roll_no' => 'required',
-					'leaving_certificate' => 'required',
-					'course_first' => 'required|not_in:0',
-					'class_first' => 'required|not_in:0'
+					// 'registration_no' => 'required',
+					// 'board_roll_no' => 'required',
+					// 'leaving_certificate' => 'required',
+					// 'course_first' => 'required|not_in:0',
+					// 'class_first' => 'required|not_in:0'
 				];
 
 				$fields = [
@@ -1530,18 +1530,18 @@ class StudentMasterController extends Controller
 				$staff_rule=($staff=='no')?'':'required|not_in:0';
 
 				$rules=[
-					'transportation' => 'required',
-					'station_id'=>$station_rule,
-					'route_id'=>$route_rule,
-					'bus_no'=>$vehicle_rule,
-					'busfare'=>$fare_rule,
-					'transconcession_amount'=>$trans_rule,
-					'totalfare'=>$total_rule,
-					'transport_concession' => $concession_rule,
-					'staffchild' => 'required',
-					'child_no'=>$staff_rule,
-					'management_concession' => 'required',
-					'applicable' => 'required'
+					// 'transportation' => 'required',
+					// 'station_id'=>$station_rule,
+					// 'route_id'=>$route_rule,
+					// 'bus_no'=>$vehicle_rule,
+					// 'busfare'=>$fare_rule,
+					// 'transconcession_amount'=>$trans_rule,
+					// 'totalfare'=>$total_rule,
+					// 'transport_concession' => $concession_rule,
+					// 'staffchild' => 'required',
+					// 'child_no'=>$staff_rule,
+					// 'management_concession' => 'required',
+					// 'applicable' => 'required'
 				];
 
 				$fields = [
@@ -1996,6 +1996,9 @@ class StudentMasterController extends Controller
 			$info = StudentMaster::where('id',$insert_id)->get();
 		}
 
+		//manually assign
+		//$tab='personal_detail';
+
 		if($tab=='personal_detail')
 		{
 			if($insert_id)
@@ -2015,7 +2018,7 @@ class StudentMasterController extends Controller
 			$rules=[
 				'student_image' => $image_rule,
 				'student_name' => 'required',
-				'dob' => 'required',
+				// 'dob' => 'required',
 				'gender' => 'required',
 				'nationality' => 'required',
 				// 'marital_status'=>'required',
@@ -2160,10 +2163,10 @@ class StudentMasterController extends Controller
 
 			$rules=[
 				 'admission_date' => 'required',
-				// 'admission_no' => $admsn_rule,
+				'admission_no' => $admsn_rule,
 				'course_id' => 'required',
 				'class_id' => 'required',
-				'section_id' => 'required',
+				// 'section_id' => 'required',
 				// 'roll_no' => 'required',
 				// 'roll_no' => $roll_rule,
 				// 'registration_no' => 'required',

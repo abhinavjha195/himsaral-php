@@ -377,8 +377,10 @@ changeClass(e){
 			this.setState({  			
 				compulsaryData: response.data.data.compulsary ? response.data.data.compulsary : [],	
 				electiveData: response.data.data.elective ? response.data.data.elective : [],	
-				additionalData: response.data.data.additional ? response.data.data.additional : []   	  
+				additionalData: response.data.data.additional ? response.data.data.additional : [] ,
+				compulsaries:response.data.data.compulsary?response.data.data.compulsary:[]  	  
 			});		
+			console.log(compulsaries,'compulsaries2');
 		})
 		.catch(error => {  	   
 		   console.log(error.message); 	  		   
@@ -414,8 +416,10 @@ changeSection(e){
 		this.setState({  			
 				compulsaryData: response.data.data.compulsary ? response.data.data.compulsary : [],	
 				electiveData: response.data.data.elective ? response.data.data.elective : [],	
-				additionalData: response.data.data.additional ? response.data.data.additional : []  		 	  
+				additionalData: response.data.data.additional ? response.data.data.additional : [],
+				compulsaries:response.data.data.compulsary?response.data.data.compulsary:[]	   		 	  
 			});
+			console.log(compulsaries,'compulsaries3');
 		})
 		.catch(error => {  	   
 		   console.log(error.message); 	
@@ -546,7 +550,8 @@ changeRoute(e) {
 	   }   
 		
 	}    
-  handleCompulsary(event) {
+  
+	handleCompulsary(event) {
 	const target = event.target;		
 	var value = target.value;
 	let checks=this.state.compulsaries; 
@@ -734,7 +739,11 @@ hasErrorFor (field) {
 		let f_image=(this.state.father_img)?this.state.father_img:''; 	
 		let m_image=(this.state.mother_img)?this.state.mother_img:''; 			
 
-		let com_subjects =(this.state.compulsaries.length>0)?this.state.compulsaries.toString():'';		
+		//let com_subjects =(this.state.compulsaries.length>0)?this.state.compulsaries.toString():'';
+		let com_subjects = (this.state.compulsaryData.length > 0) 
+  ? this.state.compulsaryData.map(item => item.subjectId).toString() 
+  : '';
+		
 		let elec_subjects =(this.state.electives.length>0)?this.state.electives.toString():'';	
 		let adt_subjects =(this.state.additionals.length>0)?this.state.additionals.toString():'';   
 		
@@ -1039,8 +1048,11 @@ componentDidMount() {
 					this.setState({  			
 						compulsaryData:response.data.data.compulsary?response.data.data.compulsary:[],	
 						electiveData:response.data.data.elective?response.data.data.elective:[],	
-						additionalData:response.data.data.additional?response.data.data.additional:[]   	  
+						additionalData:response.data.data.additional?response.data.data.additional:[],
+						compulsaries:response.data.data.compulsary?response.data.data.compulsary:[]	  
 					});		
+
+					console.log(compulsaries,'compulsaries1');
 				})
 				.catch(error => {  	   
 				   console.log(error.message); 	  				   
@@ -1259,7 +1271,7 @@ HaderPart end
 									</div>  
                                       <div className="form-row">
                                         <div className="form-group col-md-6">
-                                          <label>Student Name</label>
+                                          <label>Student Name <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span> </label>
                                           <input type="text" className={`form-control ${this.hasErrorFor('student_name') ? 'is-invalid' : ''}`} name="student_name" value={(this.state.student_name)?this.state.student_name:''} onChange={this.handleChange}/>		
 										  {this.renderErrorFor('student_name')}     
                                         </div>  
@@ -1338,7 +1350,7 @@ HaderPart end
 										  {this.renderErrorFor('blood_group')}   
                                         </div>
                                         <div className="form-group col-md-4">
-                                          <label>Aadhar No.</label>
+                                          <label>Aadhar No. <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
                                           <input type="text" className={`form-control ${this.hasErrorFor('aadhar_no') ? 'is-invalid' : ''}`} placeholder="" value={(this.state.aadhar_no)?this.state.aadhar_no:''} name="aadhar_no" onChange={this.handleChange} />
 										   {this.renderErrorFor('aadhar_no')}     
                                         </div>		
@@ -1506,12 +1518,12 @@ HaderPart end
 										}
 					  
                                         <div className="form-group col-md-12">
-                                          <label>Father Name</label>
+                                          <label>Father Name <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span> </label>
                                           <input type="text" className={`form-control ${this.hasErrorFor('father_name') ? 'is-invalid' : ''}`} placeholder="" name="father_name" value={(this.state.father_name)?this.state.father_name:''} onChange={this.handleChange} />
 										  {this.renderErrorFor('father_name')}      
                                         </div>		
                                         <div className="form-group col-md-12">
-                                          <label>Mother Name</label>
+                                          <label>Mother Name <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span> </label>
                                           <input type="text" className={`form-control ${this.hasErrorFor('mother_name') ? 'is-invalid' : ''}`} placeholder="" name="mother_name" value={(this.state.mother_name)?this.state.mother_name:''} onChange={this.handleChange} />
 										  {this.renderErrorFor('mother_name')}      
                                         </div>
@@ -1531,7 +1543,7 @@ HaderPart end
 										  {this.renderErrorFor('f_designation')}        
                                         </div>
                                         <div className="form-group col-md-12">
-                                          <label>Mobile No (For SMS)</label>
+                                          <label>Mobile No (For SMS) <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
                                           <input type="number" className={`form-control ${this.hasErrorFor('f_mobile') ? 'is-invalid' : ''}`} placeholder="" name="f_mobile" value={(this.state.f_mobile)?this.state.f_mobile:''} onChange={this.handleChange} />
 										  {this.renderErrorFor('f_mobile')}    
                                         </div>
@@ -1588,12 +1600,12 @@ HaderPart end
 										  {this.renderErrorFor('admission_date')}     			      	
                                         </div>
                                         <div className="form-group col-md-6">
-                                          <label>Admission No.</label>
+                                          <label>Admission No. <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
                                           <input type="text" className={`form-control ${this.hasErrorFor('admission_no') ? 'is-invalid' : ''}`} placeholder="" name="admission_no" ref={this.input}/> 
 										   {this.renderErrorFor('admission_no')}        	
                                         </div>
                                         <div className="form-group col-md-4">
-                                          <label>Course Name</label>
+                                          <label>Course Name <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
                                           <select className={`form-control ${this.hasErrorFor('course_id') ? 'is-invalid' : ''}`} name="course_id" onChange={this.changeCourse} value={(this.state.course_id)?this.state.course_id:''}>
 											  <option value="">Select Course</option>
 											  {this.state.courseData.map( (item, key) => {     
@@ -1605,7 +1617,7 @@ HaderPart end
 										  {this.renderErrorFor('course_id')}      	
 										</div>
                                         <div className="form-group col-md-4">
-                                          <label>Class Name</label>
+                                          <label>Class Name <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
                                           <select className={`form-control ${this.hasErrorFor('class_id') ? 'is-invalid' : ''}`} name="class_id" onChange={this.changeClass} value={(this.state.class_id)?this.state.class_id:''}>
 										  <option value="">Select Class</option>
 											  {this.state.classData.map( (item, key) => {		
@@ -1617,7 +1629,7 @@ HaderPart end
 											{this.renderErrorFor('class_id')}     
                                         </div>
                                         <div className="form-group col-md-4">
-                                          <label>Section Name</label>
+                                          <label>Section Name </label>
                                           <select className={`form-control valid ${this.hasErrorFor('section_id') ? 'is-invalid' : ''}`} name="section_id" onChange={this.changeSection} value={(this.state.section_id)?this.state.section_id:''}>
 										  <option value="">--Select--</option>   
 										  {
@@ -1724,7 +1736,7 @@ HaderPart end
 											  return (
 												<div key={key} className="form-check form-checkbox">
 													<div className="bg-padd">
-													  <input type="checkbox" checked className="form-check-input" name="compulsory_subject" onChange={this.handleCompulsary} value={item.subjectId} disabled/>  			
+													  <input type="checkbox"  checked={true}  className="form-check-input" name="compulsory_subject" onChange={this.handleCompulsary} value={item.subjectId} />  			
 													  <label className="form-check-label" htmlFor="check1">{item.subjectName}</label>    
 													</div>
 												 </div>    
@@ -1803,7 +1815,11 @@ HaderPart end
                                             <input className="form-check-input" type="radio" name="transportation" value="no" checked={this.state.selectedTransport === "no"} onChange={this.handleTransport} 
 											ref={this.input} />   
                                             <label className="form-check-label">No</label>
-                                          </div> 										 
+                                          </div> 
+
+													  
+										  
+
                                           <div className="form-row"> 
                                              {
 											this.state.show_trans ?(    
@@ -1847,6 +1863,21 @@ HaderPart end
 											):"" 
 										  }   
                                           </div>{/*/ form-row */}
+
+
+										  { this.state.totalfare?	
+										 <>
+										 <div className="form-group">
+										 <div className="col-md-8">
+											
+										  </div>
+
+										  <div className="col-md-4">
+											<label>Bus Fare :</label>{this.state.totalfare}
+										  </div>
+										  </div>
+										 
+										 </>		: ''}	
                                         </div>
 									  {
 										this.state.show_trans ?(    
