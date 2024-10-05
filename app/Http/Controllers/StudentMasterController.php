@@ -2162,7 +2162,7 @@ class StudentMasterController extends Controller
 			}
 
 			$rules=[
-				 'admission_date' => 'required',
+				//  'admission_date' => 'required',
 				'admission_no' => $admsn_rule,
 				'course_id' => 'required',
 				'class_id' => 'required',
@@ -2221,6 +2221,68 @@ class StudentMasterController extends Controller
 				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>4);
 				return response()->json($response_arr);
 			} 
+
+			$tab='miscellaneous_detail';
+
+		}
+
+
+		if($tab=='miscellaneous_detail')
+		{
+			$transportation=empty($request->transportation)?'no':$request->transportation;
+			$concession=empty($request->transport_concession)?'no':$request->transport_concession;
+			$staff=empty($request->staffchild)?'no':$request->staffchild;
+
+			$station_rule=($transportation=='no')?'':'required';
+			$route_rule=($transportation=='no')?'':'required';
+			$vehicle_rule=($transportation=='no')?'':'required';
+			$concession_rule=($transportation=='yes')?'required':'';
+			$fare_rule=($concession=='yes')?'required':'';
+			$trans_rule=($concession=='yes')?'required':'';
+			$total_rule=($concession=='yes')?'required':'';
+			$staff_rule=($staff=='no')?'':'required';
+
+			$rules=[
+				// 'transportation' => 'required',
+				'station_id'=>$station_rule,
+				'route_id'=>$route_rule,
+				'bus_no'=>$vehicle_rule,
+				'busfare'=>$fare_rule,
+				'transconcession_amount'=>$trans_rule,
+				'totalfare'=>$total_rule,
+				'transport_concession' => $concession_rule,
+				// 'staffchild' => 'required',
+				'child_no'=>$staff_rule
+				// 'management_concession' => 'required',
+				// 'applicable' => 'required'
+			];
+
+			$fields = [
+				'transportation' => 'Transportation',
+				'station_id' => 'Station',
+				'route_id' => 'Route',
+				'bus_no' => 'Bus No.',
+				'transport_concession' => 'Transportation Concession',
+				'staffchild' => 'Staff Child',
+				'child_no' => 'Staff No.',
+				'management_concession' => 'Management Concession',
+				'applicable' => 'Applicable',
+				'busfare' => 'Station Fare',
+				'transconcession_amount' => 'Concession Amount',
+				'totalfare' => 'After Concession Amount'
+			];
+
+			$messages = [
+				'required' => 'The :attribute field is required.',
+			];
+
+			$validator = Validator::make($inputs, $rules, $messages, $fields);
+			if ($validator->fails()) {
+				$errors=$validator->errors();
+				$response_arr=array("status"=>"failed","success"=>false,"message"=>"Please fill required fields!!","errors"=>$errors,"tab"=>5);
+				return response()->json($response_arr);
+			} 
+		
 
 			else
 		{
