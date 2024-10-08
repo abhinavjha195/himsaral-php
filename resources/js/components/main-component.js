@@ -143,6 +143,8 @@ import MarksReportCustom from './admin/pages/MarksReportCustom';
 import RankListPreparation from './admin/pages/RankListPreparation';
 import MarksListConsolidated from './admin/pages/MarksListConsolidated';
 import CompiledSheet from './admin/pages/CompiledSheet';
+import GeneralSetting from './admin/pages/GeneralSetting'; 
+import ResultSetting from './admin/pages/ResultSetting';
 
 // parents route
 import ChildProfile from './admin/pages/parents/ChildProfile';
@@ -302,6 +304,9 @@ function Hello() {
 		<Route path='rank-list' element={<RankListPreparation/>} />
 		<Route path='marks-list-consolidated' element={<MarksListConsolidated/>} />
 		<Route path='compiled-sheet' element={<CompiledSheet/>} />
+
+		<Route path="general_setting" element={<GeneralSetting/>} />
+		<Route path="result_setting" element={<ResultSetting/>} />
 
 
 

@@ -330,7 +330,7 @@ class Sidebar extends Component {
                 </li>
                 <li><a className="has-arrow"  aria-expanded="false"><i className="fa fa-cogs" />Setting</a>
                   <ul aria-expanded="false">
-                    <li><a href="#">General Setting</a></li>
+                    <li><a href={`/general-setting`}>General Setting</a></li>
                     <li><a href="#">Result Setting</a></li>
                   </ul>
                 </li>

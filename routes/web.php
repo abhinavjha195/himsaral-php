@@ -29,6 +29,14 @@ Route::get('/change_password', function () {
     return view('change_password');
 });
 
+Route::get('/general_setting', function () {
+    return view('general_setting');
+});
+
+Route::get('/result_setting', function () {
+    return view('result_setting');
+});
+
 Route::get('/section_add', function () {
     return view('section_add');
 });
@@ -618,3 +626,5 @@ Route::get('/homework', function () {
 Route::get('/attendance-report', function () {
     return view('parents.attendance_report');
 });
+
+
