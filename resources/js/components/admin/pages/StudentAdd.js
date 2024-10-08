@@ -30,6 +30,7 @@ class StudentAdd extends Component {
 		imgSrc1:'',
 		imgSrc2:'',  			
 		student_img:'',
+		myadmission_no:'',
 		father_img:'',
 		mother_img:'',  	
 		messgae:'',
@@ -147,7 +148,9 @@ handleTab = (event,param) => {
 handleRadio(event) {
 	const inpt=event.target.name;  		
 	this.setState({ [inpt]:event.target.value }); 				   		
-}   
+}  
+
+
 handleAdmission(event){		
     event.preventDefault(); 
 	const search = event.target.value; 	
@@ -666,7 +669,7 @@ hasErrorFor (field) {
 	var tab_id=(this.state.tab_id)?(this.state.tab_id):''; 
 	var insert_id=(this.state.insert_id)?(this.state.insert_id):'';    	
 	
-	if((tab_id=='subject_detail' || tab_id=='miscellaneous_detail') && insert_id=='')	
+	if((tab_id=='subject_detail' || tab_id=='miscellaneous_detail') && insert_id=='' && 1==2)	
 	{	
 		this.setState({showError:true,message:'Please first add personal details or parents details or admission details'});	 	   
 		
@@ -707,7 +710,8 @@ hasErrorFor (field) {
 		let s_f_email=(this.state.f_email)?this.state.f_email:'';     
 		let s_residence_no=(this.state.residence_no)?this.state.residence_no:'';  	
 		let s_admission_date=(admission_date)?admission_date.value:'';    
-		let s_admission_no=(admission_no)?admission_no.value:'';  	
+		// let s_admission_no=(admission_no)?admission_no.value:'7666743';  	
+		let s_admission_no=this.state.myadmission_no;  
 		let s_course_id=(this.state.course_id )?this.state.course_id :'';    	
 		let s_class_id=(this.state.class_id)?this.state.class_id:'';  	
 		let s_section_id=(this.state.section_id)?this.state.section_id:''; 		
@@ -720,19 +724,24 @@ hasErrorFor (field) {
 		let s_compulsory_subject=(compulsory_subject)?compulsory_subject.value:''; 
 		let s_elective_subject=(elective_subject)?elective_subject.value:'';  	
 		let s_additional_subject=(additional_subject)?additional_subject.value:'';     
-		let s_transportation=(transportation)?transportation.value:'';  	
+		// let s_transportation=(transportation)?transportation.value:'';  	
+		let s_transportation=this.state.selectedTransport;  
 		let s_station_id=(this.state.station_id)?this.state.station_id:'';    
 		let s_route_id=(this.state.route_id)?this.state.route_id:'';  	
 		let s_bus_no=(this.state.bus_no)?this.state.bus_no:''; 
-		let s_transport_concession=(transport_concession)?transport_concession.value:'';  	
+		// let s_transport_concession=(transport_concession)?transport_concession.value:'';  	
+		let s_transport_concession=this.state.selectedConcession; 
 		let s_busfare=(this.state.busfare)?this.state.busfare:''; 
 		let s_transconcession_amount=(this.state.transconcession_amount)?this.state.transconcession_amount:'';  	
 		let s_totalfare=(this.state.totalfare)?this.state.totalfare:'';     
-		let s_staffchild=(staffchild)?staffchild.value:'';  	
+		// let s_staffchild=(staffchild)?staffchild.value:'';  	
+		let s_staffchild=this.state.selectedStaff;
 		let s_child_no=(this.state.child_no)?this.state.child_no:''; 
 		let s_management_concession=(management_concession)?management_concession.value:'';    	
 		let f_applicable=(applicable)?applicable.value:'';     
-		let s_parent_type=(parent_type)?parent_type.value:'';    
+		// let s_parent_type=(parent_type)?parent_type.value:'';    
+		let s_parent_type=this.state.selectedParent;    
+		
 		let s_sibling_admission_no=(this.state.sibling_admission_no)?this.state.sibling_admission_no:'';    
 		let s_sibling_no=(this.state.sibling_no)?this.state.sibling_no:'';   
 		let s_image=(this.state.student_img)?this.state.student_img:''; 	
@@ -1601,7 +1610,10 @@ HaderPart end
                                         </div>
                                         <div className="form-group col-md-6">
                                           <label>Admission No. <span style={{ color: 'red',fontWeight:'600',fontSize:'large' }}> *</span></label>
-                                          <input type="text" className={`form-control ${this.hasErrorFor('admission_no') ? 'is-invalid' : ''}`} placeholder="" name="admission_no" ref={this.input}/> 
+                                          {/* <input type="text" className={`form-control ${this.hasErrorFor('admission_no') ? 'is-invalid' : ''}`} placeholder="" name="admission_no" ref={this.input}/>  */
+										  }
+
+<input type="text" className={`form-control ${this.hasErrorFor('admission_no') ? 'is-invalid' : ''}`} placeholder="" name="myadmission_no"   value={(this.state.myadmission_no)?this.state.myadmission_no:''} onChange={this.handleChange}/> 
 										   {this.renderErrorFor('admission_no')}        	
                                         </div>
                                         <div className="form-group col-md-4">

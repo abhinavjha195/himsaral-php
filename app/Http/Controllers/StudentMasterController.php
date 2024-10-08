@@ -1997,7 +1997,7 @@ class StudentMasterController extends Controller
 		}
 
 		//manually assign
-		//$tab='personal_detail';
+		$tab='personal_detail';
 
 		if($tab=='personal_detail')
 		{
@@ -2030,7 +2030,7 @@ class StudentMasterController extends Controller
 				// 'mobile' => 'required',
 				// 'email' => $email_rule,
 				// 'blood_group' => 'required',
-				'aadhar_no' => 'required',
+				'aadhar_no' => 'required|min:12|max:12',
 				// 'permanent_address' => 'required',
 				// 'state_id' => 'required',
 				// 'district_id' => 'required',
@@ -2229,9 +2229,9 @@ class StudentMasterController extends Controller
 
 		if($tab=='miscellaneous_detail')
 		{
-			$transportation=empty($request->transportation)?'no':$request->transportation;
-			$concession=empty($request->transport_concession)?'no':$request->transport_concession;
-			$staff=empty($request->staffchild)?'no':$request->staffchild;
+			$transportation=empty($request->transportation)?'':$request->transportation;
+			$concession=empty($request->transport_concession)?'':$request->transport_concession;
+			$staff=empty($request->staffchild)?'':$request->staffchild;
 
 			$station_rule=($transportation=='no')?'':'required';
 			$route_rule=($transportation=='no')?'':'required';

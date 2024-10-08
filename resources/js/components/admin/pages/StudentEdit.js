@@ -1020,7 +1020,7 @@ if (isLoad) {
 	}
 
 	let s_name=(this.state.student_name)?this.state.student_name:(this.state.studentData.length>0)?studentArr[0].student_name:'';
-	let s_image=(this.state.imgSrc)?this.state.imgSrc:(this.state.studentData.length>0)?base_url+'uploads/student_image/'+studentArr[0].student_image:base_url+'images/student.jpg';
+	let s_image=(this.state.imgSrc)?this.state.imgSrc:(this.state.studentData.length>0 && studentArr[0].student_image !='')?base_url+'uploads/student_image/'+studentArr[0].student_image:base_url+'images/student.jpg';
 
 	let s_dob=(this.state.dob)?this.state.dob:(this.state.studentData.length>0)?studentArr[0].dob:'0000-00-00';
 	let s_gender=(this.state.selectedGender)?this.state.selectedGender:(this.state.studentData.length>0)?studentArr[0].gender:'';
@@ -1056,9 +1056,9 @@ if (isLoad) {
 	let f_email=(this.state.f_email)?this.state.f_email:(this.state.studentData.length>0)?studentArr[0].f_email:'';
 	let f_residence_no=(this.state.residence_no)?this.state.residence_no:(this.state.studentData.length>0)?studentArr[0].residence_no:'';
 
-	let f_image=(this.state.imgSrc1)?this.state.imgSrc1:(this.state.studentData.length>0)?base_url+'uploads/father_image/'+studentArr[0].father_image:base_url+'images/male.jpg';
+	let f_image=(this.state.imgSrc1)?this.state.imgSrc1:(this.state.studentData.length>0 && studentArr[0].father_image !='')?base_url+'uploads/father_image/'+studentArr[0].father_image:base_url+'images/male.jpg';
 
-	let m_image=(this.state.imgSrc2)?this.state.imgSrc2:(this.state.studentData.length>0)?base_url+'uploads/mother_image/'+studentArr[0].mother_image:base_url+'images/female.jpg';
+	let m_image=(this.state.imgSrc2)?this.state.imgSrc2:(this.state.studentData.length>0 && studentArr[0].mother_image !='')?base_url+'uploads/mother_image/'+studentArr[0].mother_image:base_url+'images/female.jpg';
 
 	let s_admission_date=(this.state.admission_date)?this.state.admission_date:(this.state.studentData.length>0)?studentArr[0].admission_date:'';
 	let s_admission_no=(this.state.admission_no)?this.state.admission_no:(this.state.studentData.length>0)?studentArr[0].admission_no:'';
@@ -1232,7 +1232,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Student Photo</h4></div>
                                 <div className="card-body text-center account-profile">
-                                  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.s_image)?this.state.s_image:base_url+'images/student.jpg'} alt="" />
+                                  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(s_image)?s_image:base_url+'images/student.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
                                     <img src={`${base_url}images/upload-icon.png`} alt="" />
@@ -1415,7 +1415,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Father Image</h4></div>
                                 <div className="card-body text-center account-profile">
-								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.f_image)?this.state.f_image:base_url+'images/male.jpg'} alt="" />
+								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(f_image)?f_image:base_url+'images/male.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
 									<img src={`${base_url}images/upload-icon.png`} alt="" />
@@ -1432,7 +1432,7 @@ HaderPart end
                               <div className="card">
                                 <div className="card-header"><h4 className="card-title">Upload Mother Image</h4></div>
                                 <div className="card-body text-center account-profile">
-								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(this.state.m_image)?this.state.m_image:base_url+'images/female.jpg'} alt="" />
+								  <img className="img-account-profile rounded-circle mb-2 img-thumbnail" src={(m_image)?m_image:base_url+'images/female.jpg'} alt="" />
                                   <div className="small font-italic text-muted mb-4">JPG or PNG not larger than 100 KB</div>
                                   <div className="upload-grid">
 									<img src={`${base_url}images/upload-icon.png`} alt="" />
@@ -1583,7 +1583,7 @@ HaderPart end
                                       <div className="form-row">
                                         <div className="form-group col-md-6">
                                           <label>Date of Admission</label>
-                                          <input type="date" className={`form-control ${this.hasErrorFor('admission_date') ? 'is-invalid' : ''}`} placeholder="" name="admission_date" value={s_admission_date} onChange={this.handleChange} />
+                                          <input type="date" className={`form-control ${this.hasErrorFor('admission_date') ? 'is-invalid' : ''}`} placeholder="" name="admission_date"   value={(this.state.s_admission_date)?this.state.s_admission_date:date_of_admission} onChange={this.handleChange} />
 										  {this.renderErrorFor('admission_date')}
                                         </div>
                                         <div className="form-group col-md-6">
