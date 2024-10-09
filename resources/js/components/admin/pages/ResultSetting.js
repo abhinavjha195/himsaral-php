@@ -55,12 +55,14 @@ class ResultSetting extends Component {
 		  attendancelst:[],
 		  marklst:[],
 		  errors:[],
+          selectedResults: {}, // Holds the checkbox states for each student
 	  }
 
 	  this.handleChange = this.handleChange.bind(this);
 	  this.handleAttendance = this.handleAttendance.bind(this);
 	  this.handleCourse = this.handleCourse.bind(this);
 	  this.handleExam = this.handleExam.bind(this);
+      this.getStudent = this.getStudent.bind(this);
 	  this.handleSection = this.handleSection.bind(this);
 	  this.handleClass = this.handleClass.bind(this);
 	  this.handleSubject = this.handleSubject.bind(this);
@@ -238,6 +240,78 @@ handleSection(event){
 	else
 	{
 		this.setState({ [inpt]:id,subject_id:'',subjectList:[],studentList:[] });
+	}
+}
+
+
+saveResultSetting = (studentId, isChecked) => {
+    // Send the updated checkbox data to the API
+    axios.post('/save-result-setting', {
+      student_id: studentId,
+      show_result: isChecked,
+      exam_id:this.state.exam_id,
+      course_id:this.state.course_id,
+      class_id:this.state.class_id,
+      section_id:this.state.section_id,
+
+    })
+      .then(response => {
+        console.log('Result saved successfully:', response.data);
+      })
+      .catch(error => {
+        console.error('Error saving result:', error);
+      });
+  };
+
+
+handleCheckboxChange = (studentId) => {
+    // Update the selectedResults state when a checkbox is checked/unchecked
+    this.setState(prevState => {
+      const selectedResults = { ...prevState.selectedResults };
+      selectedResults[studentId] = !selectedResults[studentId]; // Toggle checkbox value
+
+      // Optionally: Send data to the API immediately upon checkbox change
+      this.saveResultSetting(studentId, selectedResults[studentId]);
+
+      return { selectedResults };
+    });
+  };
+
+
+getStudent(event){
+	
+	const exam_id = this.state.exam_id;
+	const course_id = this.state.course_id;
+	const class_id=this.state.class_id;
+    const section_id=this.state.section_id;
+
+	if(section_id !='')
+	{
+		axios.get(`${base_url}api`+`/utility/getstudents/${course_id}/${class_id}/${section_id}`).then(response => {
+
+		this.setState({
+				
+				studentList:response.data.data?response.data.data:[],
+                showTable:true,
+				
+				
+			});
+		})
+		.catch(error => {
+		   console.log(error.message);
+           
+		this.setState({
+				
+            studentList:[],
+            
+            
+        });
+		})
+
+	}
+	else
+	{
+		this.setState({ studentList:[] });
 	}
 }
 handleSubject(event){
@@ -773,6 +847,8 @@ Preloader end
 						{this.renderErrorFor('exam_id')}
 					  </div>
 
+</div>
+<div className="form-row">
 					  <div className="form-group col-md-4">
 						<label>Course Name</label>
 						<select className={`form-control ${this.hasErrorFor('course_id') ? 'is-invalid' : ''}`}  name="course_id" onChange={this.handleCourse} value={this.state.course_id}>
@@ -811,6 +887,8 @@ Preloader end
 						</select>
 						{this.renderErrorFor('section_id')}
 					  </div>
+
+                      <input type="button" className="btn btn-primary" value="show student" onClick={this.getStudent}/>
 {/* 
 					  <div className="form-group col-md-4">
 						<label>Subject Name</label>
@@ -830,108 +908,47 @@ Preloader end
 						(this.state.showTable)?(
 					  <div className="form-group col-md-12">
 
-						  <div className="table-responsive assign_subject_wise_marks">
-							<ServerTable ref={_this.serverTable} columns={columns} url={_this.state.api_url?_this.state.api_url:''} options={options} bordered condensed striped>
-							{
-								function (row,column)
-								{
-									let chk_attend='';
+						  <div className="table table-responsive assign_subject_wise_marks">
+							
 
-									if(_this.state.attendancearr.hasOwnProperty(row.id))
-									{
-										chk_attend=_this.state.attendancearr[row.id];
-									}
-									else if(row.attend==0)
-									{
-										chk_attend='present';
-									}
-									else
-									{
-										chk_attend=row.attend;
-									}
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll no.</th>
+                                    <th>Admission no.</th>
+                                    <th>Student name</th>
+                                    <th>Father name</th>
+                                    <th>show result</th>
+                                </tr>
+                            </thead>
 
-									switch (column) {
-										case 'max_mark':
-											return (
-												  <><input name="max_mark[]" type="text" id={row.id} aria-invalid="false" className="form-control" value={row.max_mark} ref={node =>_this.state.marklst.push(node)} readOnly={true}/></>
-											  );
-										case 'theory':
-											return (
-												  <><input name="theory_mark[]" type="text" id={row.id} data-id={row.theory_max} aria-invalid="false" className="form-control" value={(_this.state.theoryarr.hasOwnProperty(row.id))?_this.state.theoryarr[row.id]:row.theory_max} onChange={_this.handleTheory} ref={node =>_this.state.theorylst.push(node)}/>
-												{
-													_this.state.theoryalert.includes(row.id)?(
-													<span style={{color: "red"}}>Maximum marks of Theory are not more than {row.theory_max}</span>
-													):''
-												 }</>
-											  );
-										case 'assessment':
-											return (
-												  <><input name="assessment_mark[]" type="text" id={row.id} data-id={row.assessment_max} aria-invalid="false" className="form-control" value={(_this.state.assessmentarr.hasOwnProperty(row.id))?_this.state.assessmentarr[row.id]:row.assessment_max} onChange={_this.handleAssessment} ref={node =>_this.state.palst.push(node)}/>
-													{
-														_this.state.assesalert.includes(row.id)?(
-														<span style={{color: "red"}}>Maximum marks of PA are not more than {row.assessment_max}</span>
-														):''
-													 }</>
-											  );
-										case 'internal':
-											return (
-												  <><input name="internal_mark[]" type="text" id={row.id} data-id={row.internal_max} aria-invalid="false" className="form-control" value={(_this.state.internalarr.hasOwnProperty(row.id))?_this.state.internalarr[row.id]:row.internal_max} onChange={_this.handleInternal} ref={node =>_this.state.internalst.push(node)}/>
-												 {
-													_this.state.intalert.includes(row.id)?(
-													<span style={{color: "red"}}>Maximum marks of Internal are not more than {row.internal_max}</span>
-													):''
-												 }</>
-											  );
-                                              case 'marks_obtained':
-                                                return (
-                                                    <><input name="marks_obtained[]" type="text" id={row.id} data-id={row.max_mark} aria-invalid="false" className="form-control" value={(_this.state.obtarr.hasOwnProperty(row.id))?_this.state.obtarr[row.id]:row.marks_obtained} onChange={_this.handleMarkObtained} ref={node =>_this.state.obtst.push(node)}/>
-												 {
-													_this.state.obtalert.includes(row.id)?(
-													<span style={{color: "red"}}>Marks Obtained are not more than maximum marks</span>
-													):''
-												 }</>
-                                                );
-                                                // case 'attend':
-                                                //     return (
-                                                //       <select
-                                                //         name={"attendance_" + row.id}
-                                                //         id={row.id}
-                                                //         aria-invalid="false"
-                                                //         className="form-control"
-                                                //         value={chk_attend}
-                                                //         onChange={_this.handleAttendance}
-                                                //         ref={node => _this.state.attendancelst.push(node)}
-                                                //       >
-                                                //         <option value="present">Present</option>
-                                                //         <option value="absent">Absent</option>
-                                                //         <option value="leave">Leave</option>
-                                                //       </select>
-                                                //     );
+                            <tbody>
+                            {this.state.studentList.length > 0 ? (
+                    this.state.studentList.map((student, index) => (
+                      <tr key={index}>
+                        <td>{student.roll_no}</td>
+                        <td>{student.admission_no}</td>
+                        <td>{student.student_name}</td>
+                        <td>{student.father_name}</td>
+                        <td><input type="checkbox" checked={this.state.selectedResults[student.id] || false}
+                      onChange={() => this.handleCheckboxChange(student.id)} /></td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5">No data available</td>
+                    </tr>
+                  )}
+                            </tbody>
 
-										case 'attend':
-											return (
-												  <><div className="radio">
-                                                    <label><input type="radio" id={row.id} name={'attendance_'+row.id} checked={chk_attend==='present'} value="present" onChange={_this.handleAttendance} ref={node =>_this.state.attendancelst.push(node)}/>P</label>
-
-													  <label><input type="radio" id={row.id} name={'attendance_'+row.id} checked={chk_attend==='absent'} value="absent" onChange={_this.handleAttendance} ref={node =>_this.state.attendancelst.push(node)}/>A</label>
-
-													  <label><input type="radio" id={row.id} name={'attendance_'+row.id} checked={chk_attend==='leave'} value="leave" onChange={_this.handleAttendance} ref={node =>_this.state.attendancelst.push(node)}/>L</label>
-													</div></>
-											  );
-
-										default:
-											return (row[column]);
-									}
-								}
-							}
-							</ServerTable>
+                            </table>
 						</div>
 					  </div>)
 						: ''
 					}
 					</div>
 					{/******* form-row ****/}
-					<input type="submit" className="btn btn-primary" value="Save"/>
+					{/* <input type="submit" className="btn btn-primary" value="Save"/> */}
                     <div className="text-center">
 						{this.state.showError ?
 						 <div className="alert alert-danger" style={{color:"brown"}}>

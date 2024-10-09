@@ -60,6 +60,7 @@ use App\Http\Controllers\EmployeeSearchController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\MarkReportController;
+use App\Http\Controllers\UtilityController;
 
 
 // parent master
@@ -481,3 +482,8 @@ Route::get('/parents/attendance_report',[ParentController::class,'attendance_rep
 
 Route::get('/parents/getsuggestion/{key}',[ParentController::class,'getSuggestion']);
 
+
+
+Route::get('/utility/getstudents/{id1}/{id2}/{id3}', [UtilityController::class, 'getStudents']);
+
+Route::post('/save-result-setting', [UtilityController::class, 'saveResult']);
